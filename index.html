@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MushClub — Premium Mushrooms, Cultivated with Care</title>
+  <meta name="description"
+    content="MushClub grows and supplies the finest premium mushroom varieties for discerning businesses and food lovers. From forest to table — 100% organic, lab-tested, sustainably grown.">
+  <meta property="og:title" content="MushClub — Premium Mushrooms, Cultivated with Care">
+  <meta property="og:description"
+    content="From forest to table — we grow and supply the finest mushroom varieties for discerning businesses and food lovers.">
+  <meta property="og:type" content="website">
+  <meta property="og:image"
+    content="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80">
+  <meta name="theme-color" content="#2D5A3D">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍄</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <!-- Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ═══════════════════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════════════════ -->
+  <header class="nav" id="nav" role="banner">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo" aria-label="MushClub — Home">
+        <div class="logo-mask">
+          <img src="assets/images/MushclubLogo.png.jpeg" alt="MushClub Logo" class="nav__logo-image" width="48"
+            height="48">
+        </div>
+        <span class="nav__logo-text">MushClub</span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary navigation">
+        <a href="#hero" class="nav__link active" data-section="hero">Home</a>
+        <a href="#about" class="nav__link" data-section="about">About</a>
+        <a href="#products" class="nav__link" data-section="products">Products</a>
+        <a href="#contact" class="nav__link" data-section="contact">Contact</a>
+      </nav>
+
+      <a href="#contact" class="nav__cta">Enquire Now</a>
+
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"
+        aria-controls="mobile-menu">
+        <span class="nav__hamburger-line"></span>
+        <span class="nav__hamburger-line"></span>
+        <span class="nav__hamburger-line"></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="nav__mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobile navigation" aria-hidden="true">
+      <a href="#hero" class="nav__mobile-link" data-section="hero">Home</a>
+      <a href="#about" class="nav__mobile-link" data-section="about">About</a>
+      <a href="#products" class="nav__mobile-link" data-section="products">Products</a>
+      <a href="#contact" class="nav__mobile-link" data-section="contact">Contact</a>
+      <a href="#contact" class="nav__mobile-cta">Enquire Now</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- ═══════════════════════════════════════════════
+         HERO SECTION
+         ═══════════════════════════════════════════════ -->
+    <section class="hero bg-neutral-50" id="hero" aria-labelledby="hero-heading">
+      <div class="container">
+        <div class="hero__grid">
+          <div class="hero__content">
+            <h1 id="hero-heading" class="hero__heading animate-hero">Premium Mushrooms,<br>Cultivated with Care</h1>
+            <p class="hero__subheading animate-hero">From forest to table — we grow and supply the finest mushroom
+              varieties for discerning businesses and food lovers.</p>
+            <div class="hero__actions animate-hero">
+              <a href="#products" class="btn-primary">Explore Products</a>
+              <a href="#contact" class="btn-secondary">Enquire Now</a>
+            </div>
+          </div>
+          <div class="hero__image-wrapper animate-hero">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"
+              alt="A beautiful arrangement of premium fresh mushrooms on a natural wood surface, bathed in warm golden light"
+              class="hero__image" width="540" height="405" fetchpriority="high">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         TRUST STRIP
+         ═══════════════════════════════════════════════ -->
+    <section class="trust-strip" aria-label="Trust indicators">
+      <div class="container">
+        <div class="trust-strip__inner">
+          <div class="trust-strip__item animate-on-scroll">
+            <svg class="trust-strip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22c4-4 8-7.5 8-12a8 8 0 0 0-16 0c0 4.5 4 8 8 12z" />
+              <path d="M12 6c-1.5 0-3 1-3 3 0 2.5 3 5 3 5s3-2.5 3-5c0-2-1.5-3-3-3z" />
+            </svg>
+            <span class="trust-strip__text">100% Organic Cultivation</span>
+          </div>
+          <div class="trust-strip__item animate-on-scroll stagger-1">
+            <svg class="trust-strip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 7V5a4 4 0 0 0-8 0v2" />
+              <path d="M12 14v2" />
+            </svg>
+            <span class="trust-strip__text">Farm-Fresh Delivery</span>
+          </div>
+          <div class="trust-strip__item animate-on-scroll stagger-2">
+            <svg class="trust-strip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 2h6l3 7H6L9 2z" />
+              <path d="M6 9v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V9" />
+              <line x1="10" y1="13" x2="10" y2="17" />
+              <line x1="14" y1="13" x2="14" y2="17" />
+            </svg>
+            <span class="trust-strip__text">Lab-Tested Quality</span>
+          </div>
+          <div class="trust-strip__item animate-on-scroll stagger-3">
+            <svg class="trust-strip__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+            </svg>
+            <span class="trust-strip__text">Sustainable Practices</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         ABOUT SECTION
+         ═══════════════════════════════════════════════ -->
+    <section class="about section bg-neutral-50" id="about" aria-labelledby="about-heading">
+      <div class="container">
+        <div class="about__grid">
+          <div class="animate-slide-left">
+            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=1000&q=80"
+              alt="Hands carefully harvesting fresh mushrooms in a controlled growing environment" class="about__image"
+              loading="lazy" width="480" height="600">
+          </div>
+          <div class="about__text">
+            <span class="section-label animate-on-scroll">About Us</span>
+            <h2 id="about-heading" class="section-heading animate-on-scroll">Our Story</h2>
+            <p class="about__body animate-on-scroll">MushClub was born from a deep passion for mycology and a commitment
+              to bringing the freshest mushroom varieties to your table. What started as a small growing project has
+              blossomed into a dedicated supplier of fresh mushrooms — serving local restaurants, health-conscious
+              families, and mushroom enthusiasts across the region.</p>
+            <p class="about__body animate-on-scroll">We believe that every mushroom tells a story of patience,
+              precision, and care. Our climate-controlled growing rooms, combined with careful attention to mycological
+              purity, ensure that each harvest meets the highest standards of quality and freshness.</p>
+          </div>
+        </div>
+
+        <div class="about__values">
+          <div class="value-card animate-on-scroll stagger-1">
+            <svg class="value-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            <h3 class="value-card__title">Our Mission</h3>
+            <p class="value-card__desc">To make fresh, organic mushrooms accessible to everyone — from local kitchens
+              to family dinner tables.</p>
+          </div>
+          <div class="value-card animate-on-scroll stagger-2">
+            <svg class="value-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="6" />
+              <path d="M12 14l-4 8h8l-4-8z" />
+            </svg>
+            <h3 class="value-card__title">Quality Promise</h3>
+            <p class="value-card__desc">Every batch is lab-tested for purity and potency. We never compromise on quality
+              — from spore to your door.</p>
+          </div>
+          <div class="value-card animate-on-scroll stagger-3">
+            <svg class="value-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <h3 class="value-card__title">Customer First</h3>
+            <p class="value-card__desc">Your satisfaction drives everything we do. Flexible orders, prompt delivery, and
+              a dedicated support team — always.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         PRODUCTS SECTION
+         ═══════════════════════════════════════════════ -->
+    <section class="products section section--centered bg-neutral-100" id="products" aria-labelledby="products-heading">
+      <div class="container">
+        <span class="section-label animate-on-scroll">Our Products</span>
+        <h2 id="products-heading" class="section-heading text-center animate-on-scroll">Our Premium Collection</h2>
+        <p class="section-subtitle animate-on-scroll">Carefully cultivated mushroom varieties for every need — from
+          gourmet kitchens to holistic wellness.</p>
+
+        <div class="products__grid" id="products-grid">
+          <!-- Product cards rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         PRODUCT DETAIL MODAL
+         ═══════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+      aria-hidden="true">
+      <div class="modal">
+        <button class="modal__close" id="modal-close" aria-label="Close product details">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        <div class="modal__grid">
+          <div class="modal__image-section">
+            <img class="modal__main-image" id="modal-image" src="" alt="" width="400" height="400">
+          </div>
+          <div class="modal__content">
+            <p class="modal__category" id="modal-category"></p>
+            <h2 class="modal__title" id="modal-title"></h2>
+            <p class="modal__description" id="modal-description"></p>
+
+            <h3 class="modal__sub-heading">Nutritional Highlights</h3>
+            <ul class="modal__list" id="modal-nutrition"></ul>
+
+            <h3 class="modal__sub-heading">Available Forms</h3>
+            <div class="modal__forms-badges" id="modal-forms"></div>
+
+            <button class="btn-primary modal__enquire-btn" id="modal-enquire">Enquire About This Product</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         WHY CHOOSE US
+         ═══════════════════════════════════════════════ -->
+    <section class="why-us section section--centered bg-neutral-50" id="why-us" aria-labelledby="why-heading">
+      <div class="container">
+        <span class="section-label animate-on-scroll">Why MushClub</span>
+        <h2 id="why-heading" class="section-heading text-center animate-on-scroll">Why Choose Us</h2>
+        <p class="section-subtitle animate-on-scroll">Four pillars that set us apart from every other supplier.</p>
+
+        <div class="why-us__list">
+          <div class="why-us__item animate-on-scroll">
+            <span class="why-us__number">01</span>
+            <div>
+              <h3 class="why-us__item-title">Cultivated with Expertise</h3>
+              <p class="why-us__item-desc">Our growers bring dedicated attention to every growing cycle. From substrate
+                formulation to harvest timing, every step is guided by careful research and refined by craft — resulting
+                in mushrooms of exceptional quality and consistency.</p>
+            </div>
+          </div>
+          <div class="why-us__item animate-on-scroll stagger-1">
+            <span class="why-us__number">02</span>
+            <div>
+              <h3 class="why-us__item-title">Farm-to-Table Freshness</h3>
+              <p class="why-us__item-desc">From our climate-controlled growing rooms to your door in under 24 hours. No
+                warehouses, no middlemen, no compromise. Our cold-chain logistics ensure every mushroom arrives as fresh
+                as the moment it was picked.</p>
+            </div>
+          </div>
+          <div class="why-us__item animate-on-scroll stagger-2">
+            <span class="why-us__number">03</span>
+            <div>
+              <h3 class="why-us__item-title">Transparent Quality</h3>
+              <p class="why-us__item-desc">Every batch is lab-tested and fully traceable. We publish our test results,
+                show our growing process, and welcome facility visits. When we say premium, we prove it — not just
+                promise it.</p>
+            </div>
+          </div>
+          <div class="why-us__item animate-on-scroll stagger-3">
+            <span class="why-us__number">04</span>
+            <div>
+              <h3 class="why-us__item-title">Sustainable Practices</h3>
+              <p class="why-us__item-desc">Zero-waste growing methods that nourish the soil, not deplete it. Our spent
+                substrate becomes organic compost, our packaging is 100% recyclable, and our energy comes from renewable
+                sources. Growing mushrooms the way nature intended.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         CONTACT + ENQUIRY SECTION
+         ═══════════════════════════════════════════════ -->
+    <section class="contact section" id="contact" aria-labelledby="contact-heading">
+      <div class="container">
+        <span class="section-label animate-on-scroll">Get In Touch</span>
+        <h2 id="contact-heading" class="section-heading animate-on-scroll">Let’s Grow Together</h2>
+        <p class="section-subtitle animate-on-scroll contact__desktop-subtitle">Whether you’re a restaurant, retailer,
+          or curious foodie —
+          we’d love to hear from you.</p>
+
+        <div class="contact__mobile-cta-wrapper">
+          <p class="contact__mobile-text">Whether you're a restaurant, retailer, or curious foodie — we'd love to hear
+            from you.</p>
+          <a href="#contact" class="btn-primary contact__mobile-btn">Enquire Now</a>
+        </div>
+
+        <div class="contact__grid">
+          <aside class="contact__info animate-on-scroll" aria-label="Contact information">
+            <div class="contact__info-block">
+              <h3>Visit Us</h3>
+              <p>MushClub Farm<br>Abishekapatti, Tirunelveli<br>Tamil Nadu, India</p>
+            </div>
+            <div class="contact__info-block">
+              <h3>Reach Out</h3>
+              <a href="mailto:mushclub@gmail.com">mushclub@gmail.com</a>
+              <a href="tel:+917395841171">+91 73958 41171</a>
+              <a href="tel:+916369148797">+91 63691 48797</a>
+            </div>
+            <div class="contact__info-block">
+              <h3>Hours</h3>
+              <dl class="contact__hours">
+                <dt>Weekdays</dt>
+                <dd>8:00 AM — 6:00 PM</dd>
+                <dt>Saturday</dt>
+                <dd>9:00 AM — 2:00 PM</dd>
+                <dt>Sunday</dt>
+                <dd>Closed</dd>
+              </dl>
+            </div>
+          </aside>
+
+          <div class="form-container animate-on-scroll stagger-1" id="form-container">
+            <div class="form-modal-wrapper">
+              <button class="form__close" id="form-close" aria-label="Close enquiry form">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <div id="form-content">
+                <h3 class="form__title">Send an Enquiry</h3>
+                <p class="form__subtitle">Fill out the form below and we’ll get back to you within 24 hours.</p>
+
+                <form id="enquiry-form" novalidate>
+                  <div class="form__row">
+                    <div class="form__group">
+                      <label class="form__label" for="name">Full Name <span class="required"
+                          aria-label="required">*</span></label>
+                      <input class="form__input" type="text" id="name" name="name" placeholder="Enter your name"
+                        required autocomplete="name">
+                      <span class="form__error" id="name-error" role="alert"></span>
+                    </div>
+                    <div class="form__group">
+                      <label class="form__label" for="mobile">Mobile Number <span class="required"
+                          aria-label="required">*</span></label>
+                      <input class="form__input" type="tel" id="mobile" name="mobile"
+                        placeholder="Enter your mobile number" required autocomplete="tel" inputmode="tel">
+                      <span class="form__error" id="mobile-error" role="alert"></span>
+                    </div>
+                  </div>
+
+                  <div class="form__row">
+                    <div class="form__group form__group--full">
+                      <label class="form__label" for="email">Email Address</label>
+                      <input class="form__input" type="email" id="email" name="email" placeholder="Enter your email ID"
+                        autocomplete="email" inputmode="email">
+                      <span class="form__error" id="email-error" role="alert"></span>
+                    </div>
+                  </div>
+
+                  <div class="form__row">
+                    <div class="form__group">
+                      <label class="form__label" for="product">Product Interest <span class="required"
+                          aria-label="required">*</span></label>
+                      <select class="form__select" id="product" name="product" required>
+                        <option value="">Select a product…</option>
+                        <option value="oyster">Oyster Mushroom</option>
+                        <option value="shiitake">Shiitake Mushroom</option>
+                        <option value="lions-mane">Lion's Mane</option>
+                        <option value="button">Button Mushroom</option>
+                        <option value="multiple">Multiple Products</option>
+                      </select>
+                      <span class="form__error" id="product-error" role="alert"></span>
+                    </div>
+                    <div class="form__group">
+                      <label class="form__label" for="quantity">Estimated Quantity</label>
+                      <input class="form__input" type="text" id="quantity" name="quantity"
+                        placeholder="e.g. 5kg per week">
+                      <span class="form__helper">Approximate quantity helps us tailor our response.</span>
+                    </div>
+                  </div>
+
+                  <div class="form__row">
+                    <div class="form__group form__group--full">
+                      <label class="form__label" for="message">Message</label>
+                      <textarea class="form__textarea" id="message" name="message"
+                        placeholder="Tell us about your needs — preferred varieties, delivery schedule, any special requirements…"
+                        rows="4"></textarea>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn-primary form__submit" id="submit-btn">
+                    <span class="spinner"></span>
+                    <span class="btn-text">Send Enquiry</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Success State -->
+              <div class="form__success" id="form-success">
+                <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 12l3 3 5-5" />
+                </svg>
+                <h3 class="form__success-title">Thank You!</h3>
+                <p class="form__success-message">Your enquiry has been received. Our team will get back to you within 24
+                  hours with a tailored response.</p>
+                <button class="form__success-btn" id="submit-another" type="button">Submit Another Enquiry</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a href="#" class="nav__logo" aria-label="MushClub — Home">
+            <div class="logo-mask">
+              <img src="assets/images/MushclubLogo.png.jpeg" alt="MushClub Logo"
+                class="nav__logo-image footer__logo-image" width="48" height="48">
+            </div>
+            <span class="footer__logo-text">MushClub</span>
+          </a>
+          <p class="footer__brand-desc">Premium mushrooms, cultivated with care. From our growing rooms to your table —
+            quality you can taste, sustainability you can trust.</p>
+          <div class="footer__social">
+            <a href="#" class="footer__social-link" aria-label="Follow MushClub on Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="Follow MushClub on Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="#" class="footer__social-link" aria-label="Follow MushClub on Twitter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <nav aria-label="Footer navigation">
+          <h3 class="footer__heading">Quick Links</h3>
+          <a href="#hero" class="footer__link">Home</a>
+          <a href="#about" class="footer__link">About Us</a>
+          <a href="#products" class="footer__link">Products</a>
+          <a href="#why-us" class="footer__link">Why Choose Us</a>
+          <a href="#contact" class="footer__link">Contact</a>
+        </nav>
+
+        <div>
+          <h3 class="footer__heading">Contact</h3>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span>Abishekapatti,<br>Tirunelveli, India</span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <span><a href="mailto:mushclub@gmail.com">mushclub@gmail.com</a></span>
+          </div>
+          <div class="footer__contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <span>
+              <a href="tel:+917395841171">+91 73958 41171</a><br>
+              <a href="tel:+916369148797">+91 63691 48797</a>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 MushClub. All rights reserved. Crafted with 🍄 and care.</p>
+        <div class="footer__bottom-links">
+          <a href="#" class="footer__bottom-link">Privacy Policy</a>
+          <a href="#" class="footer__bottom-link">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>
