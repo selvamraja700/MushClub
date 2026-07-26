@@ -9,72 +9,72 @@
   /* ─── Product Data ─── */
   const PRODUCTS = [
     {
+      id: 'button',
+      name: 'Fresh Button Mushroom',
+      category: 'Everyday',
+      badge: 'Everyday',
+      brief: 'The classic versatile mushroom ideal for every kitchen and recipe.',
+      description: 'Our fresh Button Mushrooms are grown in enriched compost substrates, producing firm, white specimens with a clean taste and satisfying snap.',
+      nutrition: [
+        'High in selenium',
+        'Good source of vitamin B2',
+        'Low calorie with high water content',
+        'Rich in potassium and phosphorus',
+        'Contains conjugated linoleic acid (CLA)'
+      ],
+      forms: ['Fresh', 'Sliced', 'Bulk'],
+      image: 'https://ik.imagekit.io/Selvamraj700/MushClub/Mushroom.png'
+    },
+    {
       id: 'oyster',
       name: 'Oyster Mushroom',
       category: 'Gourmet',
       badge: 'Gourmet',
       brief: 'Delicate flavor with velvety texture, perfect for stir-fries and soups.',
-      description: 'The Oyster Mushroom is one of the most sought-after gourmet varieties in the world. With its distinctive fan-shaped cap and delicate, anise-like aroma, it transforms any dish into something extraordinary. Our Oyster Mushrooms are grown on enriched hardwood substrates in precisely controlled environments, producing specimens with exceptional texture and depth of flavor.',
+      description: 'Grown on premium hardwood substrates, our Oyster Mushrooms offer an exceptional velvety texture and a delicate, anise-like aroma. Perfect for elevating any dish.',
       nutrition: [
         'Rich in protein and dietary fiber',
         'High in B vitamins (B3, B5, B6)',
         'Excellent source of antioxidants',
-        'Contains lovastatin \u2014 supports heart health',
+        'Supports heart health',
         'Low in calories, high in nutrients'
       ],
       forms: ['Fresh', 'Dried', 'Powdered'],
-      image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80'
+      image: 'https://ik.imagekit.io/Selvamraj700/MushClub/Oyster.png'
     },
     {
-      id: 'shiitake',
-      name: 'Shiitake Mushroom',
-      category: 'Medicinal \u00b7 Gourmet',
-      badge: 'Medicinal \u00b7 Gourmet',
-      brief: 'Rich umami flavor prized in Asian cuisine with immune-boosting properties.',
-      description: 'Shiitake mushrooms have been revered in East Asian culture for over 2,000 years \u2014 both as a culinary delicacy and as a cornerstone of traditional medicine. Our Shiitake are cultivated on aged oak logs, developing deep umami complexity and a meaty texture that rivals any protein. They contain lentinan, a polysaccharide studied extensively for its immune-modulating properties.',
+      id: 'spawn',
+      name: 'Premium Mushroom Spawn',
+      category: 'Cultivation',
+      badge: 'Cultivation',
+      brief: 'High-yielding, vigorous grain spawn for commercial and hobby growers.',
+      description: 'Our premium mushroom spawn is cultivated under strict sterile conditions. We ensure vigorous mycelial growth for maximum yield and reliability in your own mushroom farm.',
       nutrition: [
-        'Contains lentinan \u2014 immune system support',
-        'Rich in vitamin D (when sun-exposed)',
-        'Excellent source of copper and selenium',
-        'High in eritadenine \u2014 cardiovascular support',
-        'Complete protein with all essential amino acids'
+        'Vigorous first-generation mycelium',
+        'Sterile grain base',
+        'High yield potential',
+        'Contamination-free guarantee',
+        'Perfect for commercial inoculation'
       ],
-      forms: ['Fresh', 'Dried', 'Powdered', 'Extract'],
-      image: 'https://images.unsplash.com/photo-1567375698348-5d9d5ae99de0?auto=format&fit=crop&w=800&q=80'
+      forms: ['Grain Spawn', 'Sawdust Spawn', 'Liquid Culture'],
+      image: 'https://ik.imagekit.io/Selvamraj700/MushClub/spawnPM.png'
     },
     {
-      id: 'lions-mane',
-      name: 'Lion\u2019s Mane',
-      category: 'Medicinal',
-      badge: 'Medicinal',
-      brief: 'Unique cascading spines with remarkable cognitive health benefits.',
-      description: 'Lion\u2019s Mane is nature\u2019s brain food. This extraordinary mushroom, with its cascading white spines resembling a waterfall of icicles, has been the subject of groundbreaking neuroscience research. Studies show it stimulates Nerve Growth Factor (NGF) production, supporting brain health, memory, and cognitive function. Our Lion\u2019s Mane is grown to maximize hericenone and erinacine content \u2014 the bioactive compounds responsible for its remarkable neuroprotective properties.',
+      id: 'pellet',
+      name: 'Hardwood Substrate Pellets',
+      category: 'Cultivation',
+      badge: 'Cultivation',
+      brief: '100% natural hardwood pellets for optimal mushroom cultivation.',
+      description: 'The perfect foundation for gourmet mushroom growth. Our premium hardwood pellets expand easily and provide the ideal nutritional base for a variety of wood-loving mushrooms.',
       nutrition: [
-        'Stimulates Nerve Growth Factor (NGF)',
-        'Supports memory and cognitive function',
-        'Rich in beta-glucans for immune support',
-        'Contains hericenones and erinacines',
-        'Anti-inflammatory and antioxidant properties'
+        '100% Natural Hardwood blend',
+        'No chemical additives',
+        'High moisture retention capacity',
+        'Perfect carbon-to-nitrogen ratio',
+        'Ideal for Oyster and Shiitake'
       ],
-      forms: ['Fresh', 'Dried', 'Powdered', 'Tincture'],
-      image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=800&q=80'
-    },
-    {
-      id: 'button',
-      name: 'Button Mushroom',
-      category: 'Everyday',
-      badge: 'Everyday',
-      brief: 'The classic versatile mushroom ideal for every kitchen and recipe.',
-      description: 'The humble Button Mushroom is the world\u2019s most popular mushroom variety \u2014 and for good reason. Its mild, clean flavor adapts beautifully to any cuisine, from Italian to Indian, from breakfast omelettes to elegant sauces. Our Button Mushrooms are grown in composted straw substrates, producing firm, white specimens with a satisfying snap and clean taste.',
-      nutrition: [
-        'High in selenium \u2014 thyroid support',
-        'Good source of vitamin B2 (riboflavin)',
-        'Contains conjugated linoleic acid (CLA)',
-        'Rich in potassium and phosphorus',
-        'Low calorie with high water content'
-      ],
-      forms: ['Fresh', 'Sliced', 'Canned'],
-      image: 'https://images.unsplash.com/photo-1509358271058-acd05cc93898?auto=format&fit=crop&w=800&q=80'
+      forms: ['20lb Bag', '50lb Bag', 'Bulk Sack'],
+      image: 'https://ik.imagekit.io/Selvamraj700/MushClub/pellet.png'
     }
   ];
 
@@ -533,33 +533,58 @@
     if (!modalOverlay) return;
     currentProduct = product;
 
+    // Set large image (Left Column)
     var modalImage = document.getElementById('modal-image');
     if (modalImage) {
       modalImage.src = product.image;
       modalImage.alt = product.name + ' \u2014 detailed view';
     }
-    var modalCategory = document.getElementById('modal-category');
-    if (modalCategory) modalCategory.textContent = product.category;
+
+    // Row 1: Title + Category
     var modalTitle = document.getElementById('modal-title');
     if (modalTitle) modalTitle.textContent = product.name;
-    var modalDescription = document.getElementById('modal-description');
-    if (modalDescription) modalDescription.textContent = product.description;
+    var modalCategory = document.getElementById('modal-category');
+    if (modalCategory) modalCategory.textContent = product.category;
 
-    var nutritionList = document.getElementById('modal-nutrition');
-    if (nutritionList) {
-      nutritionList.innerHTML = product.nutrition
-        .map(function (item) { return '<li>' + item + '</li>'; })
-        .join('');
-    }
-
+    // Row 2: Specialities (inline tags)
     var formsContainer = document.getElementById('modal-forms');
     if (formsContainer) {
-      formsContainer.innerHTML = product.forms
+      formsContainer.innerHTML = (product.forms || [])
         .map(function (form) { return '<span class="modal__form-badge">' + form + '</span>'; })
         .join('');
     }
 
+    // Row 3: Health Benefits (Condensed to max 2 short items)
+    var nutritionList = document.getElementById('modal-nutrition');
+    if (nutritionList) {
+      var shortNutrition = (product.nutrition || []).slice(0, 2);
+      nutritionList.innerHTML = shortNutrition
+        .map(function (item) { return '<li>' + item + '</li>'; })
+        .join('');
+    }
+
+    // Row 4: Short Description (Condensed to 1 short sentence max, ~110 chars max)
+    var modalDescription = document.getElementById('modal-description');
+    if (modalDescription) {
+      var rawText = product.brief || product.description || '';
+      var sentence = rawText.split('.')[0] + '.';
+      if (sentence.length > 110) {
+        sentence = sentence.substring(0, 105).trim() + '\u2026';
+      }
+      modalDescription.textContent = sentence;
+    }
+
     overlayManager.open('product-modal');
+  }
+
+  // Row 5 / Action: Buy Now button → Enquiry form transition
+  var modalBuyNow = document.getElementById('modal-buy-now');
+  if (modalBuyNow) {
+    modalBuyNow.addEventListener('click', function () {
+      var product = currentProduct;
+      currentProduct = null;
+      openEnquiryForm(product);
+    });
   }
 
   // Product modal close button
@@ -612,16 +637,6 @@
           firstEl.focus();
         }
       }
-    });
-  }
-
-  // Product modal → Enquiry form transition
-  var modalEnquire = document.getElementById('modal-enquire');
-  if (modalEnquire) {
-    modalEnquire.addEventListener('click', function () {
-      var product = currentProduct;
-      currentProduct = null;
-      openEnquiryForm(product);
     });
   }
 

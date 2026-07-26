@@ -82,8 +82,8 @@
             </div>
           </div>
           <div class="hero__image-wrapper animate-hero">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80"
-              alt="A beautiful arrangement of premium fresh mushrooms on a natural wood surface, bathed in warm golden light"
+            <img src="https://ik.imagekit.io/Selvamraj700/MushClub/mushrrom%20house"
+              alt="Mushroom House"
               class="hero__image" width="540" height="405" fetchpriority="high">
           </div>
         </div>
@@ -144,8 +144,8 @@
       <div class="container">
         <div class="about__grid">
           <div class="animate-slide-left">
-            <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=1000&q=80"
-              alt="Hands carefully harvesting fresh mushrooms in a controlled growing environment" class="about__image"
+            <img src="https://ik.imagekit.io/Selvamraj700/MushClub/ChatGPT%20Image%20Jul%2026,%202026,%2005_04_17%20PM.png"
+              alt="About Us Image" class="about__image"
               loading="lazy" width="480" height="600">
           </div>
           <div class="about__text">
@@ -220,7 +220,7 @@
          ═══════════════════════════════════════════════ -->
     <div class="modal-overlay" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
       aria-hidden="true">
-      <div class="modal">
+      <div class="modal" id="modal-card">
         <button class="modal__close" id="modal-close" aria-label="Close product details">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round">
@@ -228,22 +228,47 @@
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
+
         <div class="modal__grid">
-          <div class="modal__image-section">
-            <img class="modal__main-image" id="modal-image" src="" alt="" width="400" height="400">
+          <!-- LEFT COLUMN: Mushroom image only (large, centered, in image-box) -->
+          <div class="modal__left-side">
+            <div class="modal__image-box">
+              <img class="modal__main-image" id="modal-image" src="" alt="Mushroom Image" width="360" height="360">
+            </div>
           </div>
-          <div class="modal__content">
-            <p class="modal__category" id="modal-category"></p>
-            <h2 class="modal__title" id="modal-title"></h2>
-            <p class="modal__description" id="modal-description"></p>
 
-            <h3 class="modal__sub-heading">Nutritional Highlights</h3>
-            <ul class="modal__list" id="modal-nutrition"></ul>
+          <!-- RIGHT COLUMN: Product details (5-block structure + Buy Now) -->
+          <div class="modal__right-side">
+            <!-- Row 1: Name + Category -->
+            <div class="modal__header-row">
+              <h2 class="modal__title" id="modal-title"></h2>
+              <span class="modal__title-sep">—</span>
+              <span class="modal__badge" id="modal-category"></span>
+            </div>
 
-            <h3 class="modal__sub-heading">Available Forms</h3>
-            <div class="modal__forms-badges" id="modal-forms"></div>
+            <!-- Row 2: Specialities -->
+            <div class="modal__meta-row">
+              <span class="modal__meta-label">SPECIALITIES:</span>
+              <div class="modal__forms-badges" id="modal-forms"></div>
+            </div>
 
-            <button class="btn-primary modal__enquire-btn" id="modal-enquire">Enquire About This Product</button>
+            <!-- Row 3: Health Benefits -->
+            <div class="modal__benefits-row">
+              <span class="modal__meta-label">HEALTH BENEFITS:</span>
+              <ul class="modal__list" id="modal-nutrition"></ul>
+            </div>
+
+            <!-- Row 4: Short Description -->
+            <div class="modal__desc-row">
+              <p class="modal__description" id="modal-description"></p>
+            </div>
+
+            <!-- Row 5 / Action: Divider + Buy Now Button -->
+            <div class="modal__purchase-section">
+              <button class="modal__buy-now-btn" id="modal-buy-now" type="button">
+                Purchase Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -263,36 +288,28 @@
             <span class="why-us__number">01</span>
             <div>
               <h3 class="why-us__item-title">Cultivated with Expertise</h3>
-              <p class="why-us__item-desc">Our growers bring dedicated attention to every growing cycle. From substrate
-                formulation to harvest timing, every step is guided by careful research and refined by craft — resulting
-                in mushrooms of exceptional quality and consistency.</p>
+              <p class="why-us__item-desc">Our dedicated growers optimize substrate formulation and precision harvest timing to guarantee consistently high-quality mushrooms.</p>
             </div>
           </div>
           <div class="why-us__item animate-on-scroll stagger-1">
             <span class="why-us__number">02</span>
             <div>
               <h3 class="why-us__item-title">Farm-to-Table Freshness</h3>
-              <p class="why-us__item-desc">From our climate-controlled growing rooms to your door in under 24 hours. No
-                warehouses, no middlemen, no compromise. Our cold-chain logistics ensure every mushroom arrives as fresh
-                as the moment it was picked.</p>
+              <p class="why-us__item-desc">We deliver from our climate-controlled rooms to your door in under 24 hours. Direct cold-chain logistics with zero middlemen ensure ultimate freshness.</p>
             </div>
           </div>
           <div class="why-us__item animate-on-scroll stagger-2">
             <span class="why-us__number">03</span>
             <div>
               <h3 class="why-us__item-title">Transparent Quality</h3>
-              <p class="why-us__item-desc">Every batch is lab-tested and fully traceable. We publish our test results,
-                show our growing process, and welcome facility visits. When we say premium, we prove it — not just
-                promise it.</p>
+              <p class="why-us__item-desc">Every batch is lab-tested and fully traceable. We openly publish test results and welcome facility visits so you can trust what you eat.</p>
             </div>
           </div>
           <div class="why-us__item animate-on-scroll stagger-3">
             <span class="why-us__number">04</span>
             <div>
               <h3 class="why-us__item-title">Sustainable Practices</h3>
-              <p class="why-us__item-desc">Zero-waste growing methods that nourish the soil, not deplete it. Our spent
-                substrate becomes organic compost, our packaging is 100% recyclable, and our energy comes from renewable
-                sources. Growing mushrooms the way nature intended.</p>
+              <p class="why-us__item-desc">Our zero-waste facility turns spent substrate into compost and uses 100% recyclable packaging, fully powered by renewable energy.</p>
             </div>
           </div>
         </div>
