@@ -19,7 +19,7 @@
         'Rich in protein and dietary fiber',
         'High in B vitamins (B3, B5, B6)',
         'Excellent source of antioxidants',
-        'Contains lovastatin — supports heart health',
+        'Contains lovastatin \u2014 supports heart health',
         'Low in calories, high in nutrients'
       ],
       forms: ['Fresh', 'Dried', 'Powdered'],
@@ -31,12 +31,12 @@
       category: 'Medicinal \u00b7 Gourmet',
       badge: 'Medicinal \u00b7 Gourmet',
       brief: 'Rich umami flavor prized in Asian cuisine with immune-boosting properties.',
-      description: 'Shiitake mushrooms have been revered in East Asian culture for over 2,000 years — both as a culinary delicacy and as a cornerstone of traditional medicine. Our Shiitake are cultivated on aged oak logs, developing deep umami complexity and a meaty texture that rivals any protein. They contain lentinan, a polysaccharide studied extensively for its immune-modulating properties.',
+      description: 'Shiitake mushrooms have been revered in East Asian culture for over 2,000 years \u2014 both as a culinary delicacy and as a cornerstone of traditional medicine. Our Shiitake are cultivated on aged oak logs, developing deep umami complexity and a meaty texture that rivals any protein. They contain lentinan, a polysaccharide studied extensively for its immune-modulating properties.',
       nutrition: [
-        'Contains lentinan — immune system support',
+        'Contains lentinan \u2014 immune system support',
         'Rich in vitamin D (when sun-exposed)',
         'Excellent source of copper and selenium',
-        'High in eritadenine — cardiovascular support',
+        'High in eritadenine \u2014 cardiovascular support',
         'Complete protein with all essential amino acids'
       ],
       forms: ['Fresh', 'Dried', 'Powdered', 'Extract'],
@@ -44,11 +44,11 @@
     },
     {
       id: 'lions-mane',
-      name: "Lion\u2019s Mane",
+      name: 'Lion\u2019s Mane',
       category: 'Medicinal',
       badge: 'Medicinal',
       brief: 'Unique cascading spines with remarkable cognitive health benefits.',
-      description: "Lion\u2019s Mane is nature\u2019s brain food. This extraordinary mushroom, with its cascading white spines resembling a waterfall of icicles, has been the subject of groundbreaking neuroscience research. Studies show it stimulates Nerve Growth Factor (NGF) production, supporting brain health, memory, and cognitive function. Our Lion\u2019s Mane is grown to maximize hericenone and erinacine content — the bioactive compounds responsible for its remarkable neuroprotective properties.",
+      description: 'Lion\u2019s Mane is nature\u2019s brain food. This extraordinary mushroom, with its cascading white spines resembling a waterfall of icicles, has been the subject of groundbreaking neuroscience research. Studies show it stimulates Nerve Growth Factor (NGF) production, supporting brain health, memory, and cognitive function. Our Lion\u2019s Mane is grown to maximize hericenone and erinacine content \u2014 the bioactive compounds responsible for its remarkable neuroprotective properties.',
       nutrition: [
         'Stimulates Nerve Growth Factor (NGF)',
         'Supports memory and cognitive function',
@@ -65,9 +65,9 @@
       category: 'Everyday',
       badge: 'Everyday',
       brief: 'The classic versatile mushroom ideal for every kitchen and recipe.',
-      description: 'The humble Button Mushroom is the world\u2019s most popular mushroom variety — and for good reason. Its mild, clean flavor adapts beautifully to any cuisine, from Italian to Indian, from breakfast omelettes to elegant sauces. Our Button Mushrooms are grown in composted straw substrates, producing firm, white specimens with a satisfying snap and clean taste.',
+      description: 'The humble Button Mushroom is the world\u2019s most popular mushroom variety \u2014 and for good reason. Its mild, clean flavor adapts beautifully to any cuisine, from Italian to Indian, from breakfast omelettes to elegant sauces. Our Button Mushrooms are grown in composted straw substrates, producing firm, white specimens with a satisfying snap and clean taste.',
       nutrition: [
-        'High in selenium — thyroid support',
+        'High in selenium \u2014 thyroid support',
         'Good source of vitamin B2 (riboflavin)',
         'Contains conjugated linoleic acid (CLA)',
         'Rich in potassium and phosphorus',
@@ -96,14 +96,193 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ═══════════════════════════════════════════════════════
+     OVERLAY MANAGER — Single Source of Truth
+
+     All overlay state, scroll locking, DOM class toggling,
+     ARIA attribute updates, and focus management are
+     controlled exclusively through this manager.
+
+     Public API:
+       overlayManager.open(name)          — open an overlay
+       overlayManager.close(overrideY?)   — close the active overlay
+       overlayManager.switchTo(name)      — alias for open (seamless transition)
+       overlayManager.getActive()         — current overlay name or null
+       overlayManager.isActive()          — true if any overlay is open
+       overlayManager.isLocked()          — true if scroll is locked
+       overlayManager.getSavedScrollY()   — saved scroll position
+     ═══════════════════════════════════════════════════════ */
+  var MOBILE_BREAKPOINT = 768;
+
+  const overlayManager = (function () {
+    // ─── Private state — no external code may modify these ───
+    var activeOverlay = null;   // null | 'mobile-menu' | 'product-modal' | 'enquiry-form'
+    var savedScrollY = 0;
+    var scrollLocked = false;
+    var savedFocusElement = null;
+
+    // ─── Private: Lock page scroll ───
+    function lockScroll() {
+      if (scrollLocked) return;
+      savedScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + savedScrollY + 'px';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('menu-open');
+      document.documentElement.classList.add('menu-open');
+      scrollLocked = true;
+    }
+
+    // ─── Private: Unlock page scroll ───
+    function unlockScroll(overrideScrollY) {
+      if (!scrollLocked) return;
+
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.body.classList.remove('menu-open');
+      document.documentElement.classList.remove('menu-open');
+
+      var targetY = (typeof overrideScrollY === 'number') ? overrideScrollY : savedScrollY;
+
+      var htmlEl = document.documentElement;
+      var prevBehavior = htmlEl.style.scrollBehavior;
+      htmlEl.style.scrollBehavior = 'auto';
+      window.scrollTo(0, targetY);
+      htmlEl.style.scrollBehavior = prevBehavior;
+
+      scrollLocked = false;
+    }
+
+    // ─── Private: Apply DOM classes + ARIA for an overlay ───
+    function applyOverlayDOM(name) {
+      if (name === 'mobile-menu') {
+        if (hamburger) {
+          hamburger.classList.add('open');
+          hamburger.setAttribute('aria-expanded', 'true');
+          hamburger.setAttribute('aria-label', 'Close menu');
+        }
+        if (mobileMenu) {
+          mobileMenu.classList.add('open');
+          mobileMenu.setAttribute('aria-hidden', 'false');
+        }
+      } else if (name === 'product-modal') {
+        if (modalOverlay) {
+          modalOverlay.classList.add('active');
+          modalOverlay.setAttribute('aria-hidden', 'false');
+        }
+      } else if (name === 'enquiry-form') {
+        if (formContainer) {
+          formContainer.classList.add('modal-active');
+          // Force visibility — the form-container has animate-on-scroll which
+          // starts at opacity:0. On mobile, IntersectionObserver never fires
+          // for it because it's display:none, so .visible is never added.
+          formContainer.classList.add('visible');
+          formContainer.style.opacity = '1';
+          formContainer.style.transform = 'none';
+        }
+      }
+    }
+
+    // ─── Private: Remove DOM classes + ARIA for an overlay ───
+    function removeOverlayDOM(name) {
+      if (name === 'mobile-menu') {
+        if (hamburger) {
+          hamburger.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.setAttribute('aria-label', 'Open menu');
+        }
+        if (mobileMenu) {
+          mobileMenu.classList.remove('open');
+          mobileMenu.setAttribute('aria-hidden', 'true');
+        }
+      } else if (name === 'product-modal') {
+        if (modalOverlay) {
+          modalOverlay.classList.remove('active');
+          modalOverlay.setAttribute('aria-hidden', 'true');
+        }
+      } else if (name === 'enquiry-form') {
+        if (formContainer) {
+          formContainer.classList.remove('modal-active');
+        }
+      }
+    }
+
+    // ─── Public API ───
+    return {
+      /**
+       * Open an overlay by name.
+       * If another overlay is already active, it is closed first
+       * WITHOUT unlocking scroll (seamless transition).
+       */
+      open: function (name) {
+        if (activeOverlay === name) return;
+
+        // Transition: close previous overlay without unlocking scroll
+        if (activeOverlay) {
+          removeOverlayDOM(activeOverlay);
+        }
+
+        // Save focus only when opening from a clean state
+        if (!savedFocusElement) {
+          savedFocusElement = document.activeElement;
+        }
+
+        activeOverlay = name;
+        applyOverlayDOM(name);
+        lockScroll();
+
+        // Focus management per overlay type
+        if (name === 'product-modal' && modalClose) {
+          setTimeout(function () { modalClose.focus(); }, 100);
+        } else if (name === 'enquiry-form') {
+          var nameField = document.getElementById('name');
+          setTimeout(function () { if (nameField) nameField.focus(); }, 150);
+        }
+      },
+
+      /**
+       * Switch cleanly to a new overlay.
+       * Alias for open() — preserves scroll lock during transition.
+       */
+      switchTo: function (name) {
+        this.open(name);
+      },
+
+      /**
+       * Close the currently active overlay.
+       * Unlocks scroll and restores focus.
+       */
+      close: function (overrideScrollY) {
+        if (!activeOverlay) return;
+
+        removeOverlayDOM(activeOverlay);
+        activeOverlay = null;
+        unlockScroll(overrideScrollY);
+
+        if (savedFocusElement) {
+          savedFocusElement.focus();
+          savedFocusElement = null;
+        }
+      },
+
+      getActive: function () { return activeOverlay; },
+      isActive: function () { return activeOverlay !== null; },
+      getSavedScrollY: function () { return savedScrollY; },
+      isLocked: function () { return scrollLocked; }
+    };
+  })();
+
+  /* ═══════════════════════════════════════════════════════
      NAVIGATION — Sticky glassmorphism + active section
      ═══════════════════════════════════════════════════════ */
-  let lastScrollY = 0;
+  var lastScrollY = 0;
 
   function handleNavScroll() {
     if (!nav) return;
-    if (isScrollLocked) return;
-    const scrollY = window.scrollY;
+    if (overlayManager.isLocked()) return;
+    var scrollY = window.scrollY;
     if (scrollY > 50) {
       nav.classList.add('scrolled');
     } else {
@@ -115,15 +294,15 @@
   window.addEventListener('scroll', handleNavScroll, { passive: true });
 
   /* Active section tracking */
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav__link[data-section]');
+  var sections = document.querySelectorAll('section[id]');
+  var navLinks = document.querySelectorAll('.nav__link[data-section]');
 
-  const sectionObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
+  var sectionObserver = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          const sectionId = entry.target.id;
-          navLinks.forEach((link) => {
+          var sectionId = entry.target.id;
+          navLinks.forEach(function (link) {
             link.classList.toggle('active', link.dataset.section === sectionId);
           });
         }
@@ -135,151 +314,95 @@
     }
   );
 
-  sections.forEach((section) => sectionObserver.observe(section));
+  sections.forEach(function (section) { sectionObserver.observe(section); });
 
   /* ═══════════════════════════════════════════════════════
-     MOBILE MENU
+     MOBILE MENU — Event Listeners
+     All state changes go through overlayManager.
      ═══════════════════════════════════════════════════════ */
-  /* ─── Scroll Locking Helpers ─── */
-  let savedScrollY = 0;
-  let isScrollLocked = false;
-
-  function lockScroll() {
-    if (isScrollLocked) return;
-    savedScrollY = window.scrollY || window.pageYOffset;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${savedScrollY}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-    document.body.classList.add('menu-open');
-    document.documentElement.classList.add('menu-open');
-    isScrollLocked = true;
-  }
-
-  function unlockScroll(overrideScrollY) {
-    if (!isScrollLocked) return;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.style.overflow = '';
-    document.body.classList.remove('menu-open');
-    document.documentElement.classList.remove('menu-open');
-    const targetY = (typeof overrideScrollY === 'number') ? overrideScrollY : savedScrollY;
-    window.scrollTo(0, targetY);
-    isScrollLocked = false;
-  }
-
-  /* ═══════════════════════════════════════════════════════
-     MOBILE MENU
-     ═══════════════════════════════════════════════════════ */
-  function openMobileMenu() {
-    if (!hamburger || !mobileMenu) return;
-    hamburger.classList.add('open');
-    mobileMenu.classList.add('open');
-    mobileMenu.setAttribute('aria-hidden', 'false');
-    hamburger.setAttribute('aria-expanded', 'true');
-    hamburger.setAttribute('aria-label', 'Close menu');
-    lockScroll();
-  }
-
-  function closeMobileMenu() {
-    if (!hamburger || !mobileMenu) return;
-    hamburger.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    mobileMenu.setAttribute('aria-hidden', 'true');
-    hamburger.setAttribute('aria-expanded', 'false');
-    hamburger.setAttribute('aria-label', 'Open menu');
-    
-    // Do not unlock scroll if the enquiry form modal is active
-    if (formContainer && formContainer.classList.contains('modal-active')) {
-      return;
-    }
-    unlockScroll();
-  }
-
   if (hamburger) {
-    hamburger.addEventListener('click', (e) => {
+    hamburger.addEventListener('click', function (e) {
       e.stopPropagation();
       e.preventDefault();
-      const isOpen = hamburger.classList.contains('open');
-      if (isOpen) {
-        closeMobileMenu();
+      if (overlayManager.getActive() === 'mobile-menu') {
+        overlayManager.close();
       } else {
-        openMobileMenu();
+        overlayManager.open('mobile-menu');
       }
     });
   }
 
   // Close mobile menu when clicking outside the drawer
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', function (e) {
     if (
-      mobileMenu &&
-      hamburger &&
-      mobileMenu.classList.contains('open') &&
+      overlayManager.getActive() === 'mobile-menu' &&
+      mobileMenu && hamburger &&
       !mobileMenu.contains(e.target) &&
       !hamburger.contains(e.target)
     ) {
-      closeMobileMenu();
+      overlayManager.close();
     }
   });
 
-
-  // Handle viewport resize to clear active mobile drawer or mobile enquiry modal
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 767 && mobileMenu && mobileMenu.classList.contains('open')) {
-      closeMobileMenu();
-    }
-    if (window.innerWidth > 767 && formContainer && formContainer.classList.contains('modal-active')) {
-      formContainer.classList.remove('modal-active');
-      unlockScroll();
+  // Handle viewport resize — clean up any mobile overlay
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= MOBILE_BREAKPOINT && overlayManager.isActive()) {
+      overlayManager.close();
     }
   });
 
   /* ─── Open Enquiry Form Controller ─── */
-  function openEnquiryForm() {
-    const nameField = document.getElementById('name');
-    if (window.innerWidth <= 767) {
-      if (formContainer) {
-        formContainer.classList.add('modal-active');
-        lockScroll();
-        setTimeout(() => {
-          if (nameField) nameField.focus();
-        }, 150);
+  function openEnquiryForm(productPayload) {
+    // Pre-select product if provided
+    if (productPayload) {
+      var productSelect = document.getElementById('product');
+      if (productSelect) {
+        productSelect.value = typeof productPayload === 'string' ? productPayload : productPayload.id;
+        validateField(productSelect);
       }
-    } else {
-      const contactSection = document.getElementById('contact');
-      if (contactSection) {
-        const navHeight = nav ? nav.offsetHeight : 72;
-        const targetPosition = contactSection.getBoundingClientRect().top + window.scrollY - navHeight;
-        window.scrollTo({
-          top: targetPosition,
-          behavior: prefersReducedMotion ? 'auto' : 'smooth'
-        });
-        setTimeout(() => {
-          if (nameField) nameField.focus();
-        }, 600);
-      }
+    }
+
+    var isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+    var formHidden = formContainer && getComputedStyle(formContainer).display === 'none';
+
+    if ((isMobile || formHidden) && formContainer) {
+      // Mobile/hidden: open as modal overlay
+      // overlayManager.open() handles closing any current overlay seamlessly
+      overlayManager.open('enquiry-form');
+      return;
+    }
+
+    // Desktop: close any overlay and smooth scroll to contact section
+    if (overlayManager.isActive()) {
+      overlayManager.close();
+    }
+
+    var contactSection = document.getElementById('contact');
+    if (contactSection) {
+      var navHeight = nav ? nav.offsetHeight : 72;
+      var targetPosition = contactSection.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({
+        top: targetPosition,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth'
+      });
+      var nameField = document.getElementById('name');
+      setTimeout(function () { if (nameField) nameField.focus(); }, 600);
     }
   }
 
   /* ═══════════════════════════════════════════════════════
-     SMOOTH SCROLL — with nav offset & no page jumps
+     SMOOTH SCROLL — with nav offset & clean overlay close
      ═══════════════════════════════════════════════════════ */
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener('click', (e) => {
-      e.preventDefault(); // Always prevent default anchor jump or hash scroll
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
 
-      const targetId = anchor.getAttribute('href');
-      const wasMenuOpen = mobileMenu && mobileMenu.classList.contains('open');
+      var targetId = anchor.getAttribute('href');
+      var hadOverlay = overlayManager.isActive();
 
       if (!targetId || targetId === '#') {
-        if (wasMenuOpen) {
-          hamburger.classList.remove('open');
-          mobileMenu.classList.remove('open');
-          mobileMenu.setAttribute('aria-hidden', 'true');
-          hamburger.setAttribute('aria-expanded', 'false');
-          hamburger.setAttribute('aria-label', 'Open menu');
-          unlockScroll(0);
+        if (hadOverlay) {
+          overlayManager.close();
         } else {
           window.scrollTo({
             top: 0,
@@ -289,32 +412,21 @@
         return;
       }
 
+      // Contact link → open enquiry form (handles overlay transitions internally)
       if (targetId === '#contact') {
-        if (wasMenuOpen) {
-          hamburger.classList.remove('open');
-          mobileMenu.classList.remove('open');
-          mobileMenu.setAttribute('aria-hidden', 'true');
-          hamburger.setAttribute('aria-expanded', 'false');
-          hamburger.setAttribute('aria-label', 'Open menu');
-          unlockScroll(savedScrollY); // Unlock before opening new modal
-        }
         openEnquiryForm();
         return;
       }
 
-      const target = document.querySelector(targetId);
+      var target = document.querySelector(targetId);
       if (!target) return;
-      const navHeight = nav ? nav.offsetHeight : 72;
-      const currentScroll = isScrollLocked ? savedScrollY : window.scrollY;
-      const targetPosition = target.getBoundingClientRect().top + currentScroll - navHeight;
+      var navHeight = nav ? nav.offsetHeight : 72;
+      var currentScroll = overlayManager.isLocked() ? overlayManager.getSavedScrollY() : window.scrollY;
+      var targetPosition = target.getBoundingClientRect().top + currentScroll - navHeight;
 
-      if (wasMenuOpen) {
-        hamburger.classList.remove('open');
-        mobileMenu.classList.remove('open');
-        mobileMenu.setAttribute('aria-hidden', 'true');
-        hamburger.setAttribute('aria-expanded', 'false');
-        hamburger.setAttribute('aria-label', 'Open menu');
-        unlockScroll(targetPosition);
+      if (hadOverlay) {
+        // Close overlay and scroll to target position in one step
+        overlayManager.close(targetPosition);
       } else {
         window.scrollTo({
           top: targetPosition,
@@ -328,9 +440,9 @@
      SCROLL ANIMATIONS — IntersectionObserver
      ═══════════════════════════════════════════════════════ */
   function initScrollAnimations() {
-    const allAnimatable = document.querySelectorAll('.animate-on-scroll, .animate-slide-left, .animate-hero');
+    var allAnimatable = document.querySelectorAll('.animate-on-scroll, .animate-slide-left, .animate-hero');
     if (prefersReducedMotion) {
-      allAnimatable.forEach((el) => {
+      allAnimatable.forEach(function (el) {
         el.classList.add('visible');
         el.style.opacity = '1';
         el.style.transform = 'none';
@@ -339,15 +451,15 @@
     }
 
     // Instantly reveal top-fold hero elements so page never loads blank
-    document.querySelectorAll('.hero *, .nav *').forEach((el) => {
+    document.querySelectorAll('.hero *, .nav *').forEach(function (el) {
       if (el.classList.contains('animate-on-scroll') || el.classList.contains('animate-hero')) {
         el.classList.add('visible');
       }
     });
 
-    const animateObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+    var animateObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
             animateObserver.unobserve(entry.target);
@@ -360,12 +472,12 @@
       }
     );
 
-    document.querySelectorAll('.animate-on-scroll, .animate-slide-left').forEach((el) => {
+    document.querySelectorAll('.animate-on-scroll, .animate-slide-left').forEach(function (el) {
       animateObserver.observe(el);
     });
 
-    setTimeout(() => {
-      document.querySelectorAll('.animate-hero').forEach((el) => {
+    setTimeout(function () {
+      document.querySelectorAll('.animate-hero').forEach(function (el) {
         el.classList.add('visible');
       });
     }, 50);
@@ -375,37 +487,29 @@
      PRODUCT CARDS — Render from data
      ═══════════════════════════════════════════════════════ */
   function renderProductCards() {
-    const fragment = document.createDocumentFragment();
+    var fragment = document.createDocumentFragment();
 
-    PRODUCTS.forEach((product, index) => {
-      const card = document.createElement('article');
-      card.className = `product-card animate-on-scroll stagger-${Math.min(index + 1, 8)} visible`;
+    PRODUCTS.forEach(function (product, index) {
+      var card = document.createElement('article');
+      card.className = 'product-card animate-on-scroll stagger-' + Math.min(index + 1, 8) + ' visible';
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
-      card.setAttribute('aria-label', `View details for ${product.name}`);
+      card.setAttribute('aria-label', 'View details for ' + product.name);
       card.dataset.productId = product.id;
 
-      card.innerHTML = `
-        <div class="product-card__image-container">
-          <img
-            class="product-card__image"
-            src="${product.image}"
-            alt="${product.name} — ${product.brief}"
-            loading="lazy"
-            width="300"
-            height="225"
-          >
-        </div>
-        <div class="product-card__content">
-          <span class="product-card__badge">${product.badge}</span>
-          <h3 class="product-card__name">${product.name}</h3>
-          <p class="product-card__desc">${product.brief}</p>
-          <span class="product-card__link">View Details <span aria-hidden="true">\u2192</span></span>
-        </div>
-      `;
+      card.innerHTML =
+        '<div class="product-card__image-container">' +
+          '<img class="product-card__image" src="' + product.image + '" alt="' + product.name + ' \u2014 ' + product.brief + '" loading="lazy" width="300" height="225">' +
+        '</div>' +
+        '<div class="product-card__content">' +
+          '<span class="product-card__badge">' + product.badge + '</span>' +
+          '<h3 class="product-card__name">' + product.name + '</h3>' +
+          '<p class="product-card__desc">' + product.brief + '</p>' +
+          '<span class="product-card__link">View Details <span aria-hidden="true">\u2192</span></span>' +
+        '</div>';
 
-      card.addEventListener('click', () => openProductModal(product));
-      card.addEventListener('keydown', (e) => {
+      card.addEventListener('click', function () { openProductModal(product); });
+      card.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           openProductModal(product);
@@ -421,103 +525,81 @@
   }
 
   /* ═══════════════════════════════════════════════════════
-     PRODUCT MODAL
+     PRODUCT MODAL — All state via overlayManager
      ═══════════════════════════════════════════════════════ */
-  let lastFocusedElement = null;
-  let currentProduct = null;
+  var currentProduct = null;
 
   function openProductModal(product) {
     if (!modalOverlay) return;
     currentProduct = product;
-    lastFocusedElement = document.activeElement;
 
-    const modalImage = document.getElementById('modal-image');
+    var modalImage = document.getElementById('modal-image');
     if (modalImage) {
       modalImage.src = product.image;
-      modalImage.alt = `${product.name} — detailed view`;
+      modalImage.alt = product.name + ' \u2014 detailed view';
     }
-    const modalCategory = document.getElementById('modal-category');
+    var modalCategory = document.getElementById('modal-category');
     if (modalCategory) modalCategory.textContent = product.category;
-    const modalTitle = document.getElementById('modal-title');
+    var modalTitle = document.getElementById('modal-title');
     if (modalTitle) modalTitle.textContent = product.name;
-    const modalDescription = document.getElementById('modal-description');
+    var modalDescription = document.getElementById('modal-description');
     if (modalDescription) modalDescription.textContent = product.description;
 
-    // Nutrition list
-    const nutritionList = document.getElementById('modal-nutrition');
+    var nutritionList = document.getElementById('modal-nutrition');
     if (nutritionList) {
       nutritionList.innerHTML = product.nutrition
-        .map((item) => `<li>${item}</li>`)
+        .map(function (item) { return '<li>' + item + '</li>'; })
         .join('');
     }
 
-    // Available forms
-    const formsContainer = document.getElementById('modal-forms');
+    var formsContainer = document.getElementById('modal-forms');
     if (formsContainer) {
       formsContainer.innerHTML = product.forms
-        .map((form) => `<span class="modal__form-badge">${form}</span>`)
+        .map(function (form) { return '<span class="modal__form-badge">' + form + '</span>'; })
         .join('');
     }
 
-    modalOverlay.classList.add('active');
-    modalOverlay.setAttribute('aria-hidden', 'false');
-    lockScroll();
-
-    // Focus the close button
-    if (modalClose) {
-      setTimeout(() => modalClose.focus(), 100);
-    }
+    overlayManager.open('product-modal');
   }
 
-  function closeProductModal() {
-    if (!modalOverlay) return;
-    modalOverlay.classList.remove('active');
-    modalOverlay.setAttribute('aria-hidden', 'true');
-    unlockScroll();
-
-    if (lastFocusedElement) {
-      lastFocusedElement.focus();
-    }
-    currentProduct = null;
-  }
-
+  // Product modal close button
   if (modalClose) {
-    modalClose.addEventListener('click', closeProductModal);
+    modalClose.addEventListener('click', function () {
+      overlayManager.close();
+      currentProduct = null;
+    });
   }
 
+  // Product modal backdrop click
   if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
+    modalOverlay.addEventListener('click', function (e) {
       if (e.target === modalOverlay) {
-        closeProductModal();
+        overlayManager.close();
+        currentProduct = null;
       }
     });
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if (modalOverlay && modalOverlay.classList.contains('active')) {
-        closeProductModal();
+  // Global Escape key — closes whatever overlay is active
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlayManager.isActive()) {
+      if (overlayManager.getActive() === 'product-modal') {
+        currentProduct = null;
       }
-      if (mobileMenu && mobileMenu.classList.contains('open')) {
-        closeMobileMenu();
-      }
-      if (formContainer && formContainer.classList.contains('modal-active')) {
-        formContainer.classList.remove('modal-active');
-        unlockScroll();
-      }
+      overlayManager.close();
     }
   });
 
-  // Focus trap
+  // Focus trap for product modal
   if (modalOverlay) {
-    modalOverlay.addEventListener('keydown', (e) => {
+    modalOverlay.addEventListener('keydown', function (e) {
       if (e.key !== 'Tab') return;
-      const focusable = modalOverlay.querySelectorAll(
+      var focusable = modalOverlay.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
       if (focusable.length === 0) return;
-      const firstEl = focusable[0];
-      const lastEl = focusable[focusable.length - 1];
+      var firstEl = focusable[0];
+      var lastEl = focusable[focusable.length - 1];
 
       if (e.shiftKey) {
         if (document.activeElement === firstEl) {
@@ -533,31 +615,28 @@
     });
   }
 
-  const modalEnquire = document.getElementById('modal-enquire');
+  // Product modal → Enquiry form transition
+  var modalEnquire = document.getElementById('modal-enquire');
   if (modalEnquire) {
-    modalEnquire.addEventListener('click', () => {
-      closeProductModal();
-      const productSelect = document.getElementById('product');
-      if (currentProduct && productSelect) {
-        productSelect.value = currentProduct.id;
-      }
-      setTimeout(() => {
-        openEnquiryForm();
-      }, 100);
+    modalEnquire.addEventListener('click', function () {
+      var product = currentProduct;
+      currentProduct = null;
+      openEnquiryForm(product);
     });
   }
 
-  // Close mobile form container modal
-  if (formClose && formContainer) {
-    formClose.addEventListener('click', () => {
-      formContainer.classList.remove('modal-active');
-      unlockScroll();
+  // Close mobile enquiry form modal — close button
+  if (formClose) {
+    formClose.addEventListener('click', function () {
+      overlayManager.close();
     });
+  }
 
-    formContainer.addEventListener('click', (e) => {
+  // Close mobile enquiry form modal — backdrop click
+  if (formContainer) {
+    formContainer.addEventListener('click', function (e) {
       if (e.target === formContainer) {
-        formContainer.classList.remove('modal-active');
-        unlockScroll();
+        overlayManager.close();
       }
     });
   }
@@ -565,35 +644,35 @@
   /* ═══════════════════════════════════════════════════════
      ENQUIRY FORM — Validation + Submission
      ═══════════════════════════════════════════════════════ */
-  const validationRules = {
+  var validationRules = {
     name: {
       required: true,
-      validate: (v) => v.trim().length >= 2,
+      validate: function (v) { return v.trim().length >= 2; },
       message: 'Please enter your full name (at least 2 characters).'
     },
     mobile: {
       required: true,
-      validate: (v) => /^[\d\s\+\-()]{7,}$/.test(v.trim()),
+      validate: function (v) { return /^[\d\s\+\-()]{7,}$/.test(v.trim()); },
       message: 'Please enter a valid mobile number.'
     },
     email: {
       required: false,
-      validate: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
+      validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
       message: 'Please enter a valid email address.'
     },
     product: {
       required: true,
-      validate: (v) => v.trim() !== '',
+      validate: function (v) { return v.trim() !== ''; },
       message: 'Please select a product of interest.'
     }
   };
 
   function validateField(field) {
-    const rule = validationRules[field.name];
+    var rule = validationRules[field.name];
     if (!rule) return true;
 
-    const value = field.value;
-    const errorEl = document.getElementById(`${field.name}-error`);
+    var value = field.value;
+    var errorEl = document.getElementById(field.name + '-error');
 
     if (rule.required && !value.trim()) {
       field.classList.add('error');
@@ -617,18 +696,22 @@
 
   // Live validation on blur
   if (enquiryForm) {
-    enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach((field) => {
-      field.addEventListener('blur', () => validateField(field));
-      field.addEventListener('input', () => {
+    enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
+      field.addEventListener('blur', function () { validateField(field); });
+      field.addEventListener('input', function () {
         if (field.classList.contains('error')) {
           validateField(field);
         }
       });
+      // <select> elements fire 'change', not 'input', in most browsers
+      if (field.tagName === 'SELECT') {
+        field.addEventListener('change', function () { validateField(field); });
+      }
     });
   }
 
   // Form submission handler
-  let isSubmitting = false;
+  var isSubmitting = false;
 
   function handleFormSubmit(e) {
     if (e) e.preventDefault();
@@ -638,14 +721,13 @@
     if (!enquiryForm) return;
 
     // Validate all required fields
-    let isValid = true;
-    enquiryForm.querySelectorAll('.form__input[required], .form__select[required], .form__textarea[required]').forEach((field) => {
+    var isValid = true;
+    enquiryForm.querySelectorAll('.form__input[required], .form__select[required], .form__textarea[required]').forEach(function (field) {
       if (!validateField(field)) isValid = false;
     });
 
     if (!isValid) {
-      // Focus the first error field
-      const firstError = enquiryForm.querySelector('.form__input.error, .form__select.error, .form__textarea.error');
+      var firstError = enquiryForm.querySelector('.form__input.error, .form__select.error, .form__textarea.error');
       if (firstError) firstError.focus();
       return;
     }
@@ -657,17 +739,15 @@
       submitBtn.disabled = true;
     }
 
-    setTimeout(() => {
+    setTimeout(function () {
       isSubmitting = false;
       if (submitBtn) {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
       }
 
-      // Save user details to localStorage
       saveFormDataToCache();
 
-      // Show success state
       if (formContent) formContent.style.display = 'none';
       if (formSuccess) formSuccess.classList.add('active');
     }, 1200);
@@ -677,28 +757,20 @@
     enquiryForm.addEventListener('submit', handleFormSubmit);
   }
 
-  if (submitBtn) {
-    submitBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      handleFormSubmit(e);
-    });
-  }
-
   // Submit another
   if (submitAnother) {
-    submitAnother.addEventListener('click', (e) => {
+    submitAnother.addEventListener('click', function (e) {
       e.preventDefault();
       if (formContent) formContent.style.display = 'block';
       if (formSuccess) formSuccess.classList.remove('active');
       if (enquiryForm) {
         enquiryForm.reset();
-        enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach((field) => {
+        enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
           field.classList.remove('error', 'valid');
         });
-        enquiryForm.querySelectorAll('.form__error').forEach((el) => {
+        enquiryForm.querySelectorAll('.form__error').forEach(function (el) {
           el.textContent = '';
         });
-        // Reload cached data so user doesn't have to re-enter details
         loadCachedFormData();
       }
     });
@@ -706,9 +778,9 @@
 
   /* ─── Cache Management ─── */
   function loadCachedFormData() {
-    const nameField = document.getElementById('name');
-    const mobileField = document.getElementById('mobile');
-    const emailField = document.getElementById('email');
+    var nameField = document.getElementById('name');
+    var mobileField = document.getElementById('mobile');
+    var emailField = document.getElementById('email');
 
     if (nameField && localStorage.getItem('mushclub_name')) {
       nameField.value = localStorage.getItem('mushclub_name');
@@ -725,9 +797,9 @@
   }
 
   function saveFormDataToCache() {
-    const nameField = document.getElementById('name');
-    const mobileField = document.getElementById('mobile');
-    const emailField = document.getElementById('email');
+    var nameField = document.getElementById('name');
+    var mobileField = document.getElementById('mobile');
+    var emailField = document.getElementById('email');
 
     if (nameField) localStorage.setItem('mushclub_name', nameField.value.trim());
     if (mobileField) localStorage.setItem('mushclub_mobile', mobileField.value.trim());
@@ -740,8 +812,8 @@
   function init() {
     renderProductCards();
     initScrollAnimations();
-    handleNavScroll(); // Check initial scroll position
-    loadCachedFormData(); // Load any saved user details
+    handleNavScroll();
+    loadCachedFormData();
   }
 
   if (document.readyState === 'loading') {

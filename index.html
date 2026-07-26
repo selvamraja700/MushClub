@@ -304,16 +304,15 @@
          ═══════════════════════════════════════════════ -->
     <section class="contact section" id="contact" aria-labelledby="contact-heading">
       <div class="container">
-        <span class="section-label animate-on-scroll">Get In Touch</span>
-        <h2 id="contact-heading" class="section-heading animate-on-scroll">Let’s Grow Together</h2>
-        <p class="section-subtitle animate-on-scroll contact__desktop-subtitle">Whether you’re a restaurant, retailer,
-          or curious foodie —
-          we’d love to hear from you.</p>
-
-        <div class="contact__mobile-cta-wrapper">
-          <p class="contact__mobile-text">Whether you're a restaurant, retailer, or curious foodie — we'd love to hear
-            from you.</p>
-          <a href="#contact" class="btn-primary contact__mobile-btn">Enquire Now</a>
+        <div class="contact__header-wrapper">
+          <div class="contact__header-text">
+            <span class="section-label animate-on-scroll">Get In Touch</span>
+            <h2 id="contact-heading" class="section-heading animate-on-scroll">Let's Grow Together</h2>
+            <p class="section-subtitle animate-on-scroll">Whether you're a restaurant, retailer, or curious foodie — we'd love to hear from you.</p>
+          </div>
+          <div class="contact__header-cta">
+            <a href="#contact" class="btn-primary contact__mobile-btn">Enquire Now</a>
+          </div>
         </div>
 
         <div class="contact__grid">
@@ -340,97 +339,97 @@
               </dl>
             </div>
           </aside>
+        </div>
 
-          <div class="form-container animate-on-scroll stagger-1" id="form-container">
-            <div class="form-modal-wrapper">
-              <button class="form__close" id="form-close" aria-label="Close enquiry form">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-              <div id="form-content">
-                <h3 class="form__title">Send an Enquiry</h3>
-                <p class="form__subtitle">Fill out the form below and we’ll get back to you within 24 hours.</p>
+        <div class="form-container animate-on-scroll stagger-1" id="form-container">
+          <div class="form-modal-wrapper">
+            <button class="form__close" id="form-close" aria-label="Close enquiry form">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <div id="form-content">
+              <h3 class="form__title">Send an Enquiry</h3>
+              <p class="form__subtitle">Fill out the form below and we'll get back to you within 24 hours.</p>
 
-                <form id="enquiry-form" novalidate>
-                  <div class="form__row">
-                    <div class="form__group">
-                      <label class="form__label" for="name">Full Name <span class="required"
-                          aria-label="required">*</span></label>
-                      <input class="form__input" type="text" id="name" name="name" placeholder="Enter your name"
-                        required autocomplete="name">
-                      <span class="form__error" id="name-error" role="alert"></span>
-                    </div>
-                    <div class="form__group">
-                      <label class="form__label" for="mobile">Mobile Number <span class="required"
-                          aria-label="required">*</span></label>
-                      <input class="form__input" type="tel" id="mobile" name="mobile"
-                        placeholder="Enter your mobile number" required autocomplete="tel" inputmode="tel">
-                      <span class="form__error" id="mobile-error" role="alert"></span>
-                    </div>
+              <form id="enquiry-form" novalidate>
+                <div class="form__row">
+                  <div class="form__group">
+                    <label class="form__label" for="name">Full Name <span class="required"
+                        aria-label="required">*</span></label>
+                    <input class="form__input" type="text" id="name" name="name" placeholder="Enter your name"
+                      required autocomplete="name">
+                    <span class="form__error" id="name-error" role="alert"></span>
                   </div>
-
-                  <div class="form__row">
-                    <div class="form__group form__group--full">
-                      <label class="form__label" for="email">Email Address</label>
-                      <input class="form__input" type="email" id="email" name="email" placeholder="Enter your email ID"
-                        autocomplete="email" inputmode="email">
-                      <span class="form__error" id="email-error" role="alert"></span>
-                    </div>
+                  <div class="form__group">
+                    <label class="form__label" for="mobile">Mobile Number <span class="required"
+                        aria-label="required">*</span></label>
+                    <input class="form__input" type="tel" id="mobile" name="mobile"
+                      placeholder="Enter your mobile number" required autocomplete="tel" inputmode="tel">
+                    <span class="form__error" id="mobile-error" role="alert"></span>
                   </div>
+                </div>
 
-                  <div class="form__row">
-                    <div class="form__group">
-                      <label class="form__label" for="product">Product Interest <span class="required"
-                          aria-label="required">*</span></label>
-                      <select class="form__select" id="product" name="product" required>
-                        <option value="">Select a product…</option>
-                        <option value="oyster">Oyster Mushroom</option>
-                        <option value="shiitake">Shiitake Mushroom</option>
-                        <option value="lions-mane">Lion's Mane</option>
-                        <option value="button">Button Mushroom</option>
-                        <option value="multiple">Multiple Products</option>
-                      </select>
-                      <span class="form__error" id="product-error" role="alert"></span>
-                    </div>
-                    <div class="form__group">
-                      <label class="form__label" for="quantity">Estimated Quantity</label>
-                      <input class="form__input" type="text" id="quantity" name="quantity"
-                        placeholder="e.g. 5kg per week">
-                      <span class="form__helper">Approximate quantity helps us tailor our response.</span>
-                    </div>
+                <div class="form__row">
+                  <div class="form__group form__group--full">
+                    <label class="form__label" for="email">Email Address</label>
+                    <input class="form__input" type="email" id="email" name="email" placeholder="Enter your email ID"
+                      autocomplete="email" inputmode="email">
+                    <span class="form__error" id="email-error" role="alert"></span>
                   </div>
+                </div>
 
-                  <div class="form__row">
-                    <div class="form__group form__group--full">
-                      <label class="form__label" for="message">Message</label>
-                      <textarea class="form__textarea" id="message" name="message"
-                        placeholder="Tell us about your needs — preferred varieties, delivery schedule, any special requirements…"
-                        rows="4"></textarea>
-                    </div>
+                <div class="form__row">
+                  <div class="form__group">
+                    <label class="form__label" for="product">Product Interest <span class="required"
+                        aria-label="required">*</span></label>
+                    <select class="form__select" id="product" name="product" required>
+                      <option value="">Select a product…</option>
+                      <option value="oyster">Oyster Mushroom</option>
+                      <option value="shiitake">Shiitake Mushroom</option>
+                      <option value="lions-mane">Lion's Mane</option>
+                      <option value="button">Button Mushroom</option>
+                      <option value="multiple">Multiple Products</option>
+                    </select>
+                    <span class="form__error" id="product-error" role="alert"></span>
                   </div>
+                  <div class="form__group">
+                    <label class="form__label" for="quantity">Estimated Quantity</label>
+                    <input class="form__input" type="text" id="quantity" name="quantity"
+                      placeholder="e.g. 5kg per week">
+                    <span class="form__helper">Approximate quantity helps us tailor our response.</span>
+                  </div>
+                </div>
 
-                  <button type="submit" class="btn-primary form__submit" id="submit-btn">
-                    <span class="spinner"></span>
-                    <span class="btn-text">Send Enquiry</span>
-                  </button>
-                </form>
-              </div>
+                <div class="form__row">
+                  <div class="form__group form__group--full">
+                    <label class="form__label" for="message">Message</label>
+                    <textarea class="form__textarea" id="message" name="message"
+                      placeholder="Tell us about your needs — preferred varieties, delivery schedule, any special requirements…"
+                      rows="4"></textarea>
+                  </div>
+                </div>
 
-              <!-- Success State -->
-              <div class="form__success" id="form-success">
-                <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 12l3 3 5-5" />
-                </svg>
-                <h3 class="form__success-title">Thank You!</h3>
-                <p class="form__success-message">Your enquiry has been received. Our team will get back to you within 24
-                  hours with a tailored response.</p>
-                <button class="form__success-btn" id="submit-another" type="button">Submit Another Enquiry</button>
-              </div>
+                <button type="submit" class="btn-primary form__submit" id="submit-btn">
+                  <span class="spinner"></span>
+                  <span class="btn-text">Send Enquiry</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Success State -->
+            <div class="form__success" id="form-success">
+              <svg class="form__success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 12l3 3 5-5" />
+              </svg>
+              <h3 class="form__success-title">Thank You!</h3>
+              <p class="form__success-message">Your enquiry has been received. Our team will get back to you within 24
+                hours with a tailored response.</p>
+              <button class="form__success-btn" id="submit-another" type="button">Submit Another Enquiry</button>
             </div>
           </div>
         </div>
