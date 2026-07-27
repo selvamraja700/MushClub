@@ -474,6 +474,11 @@
               <p class="why-us__item-desc">Our zero-waste facility turns spent substrate into compost and uses 100%
                 recyclable packaging, fully powered by renewable energy.</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══════════════════════════════════════════════
          FREQUENTLY ASKED QUESTIONS (FAQ)
          ═══════════════════════════════════════════════ -->
@@ -609,14 +614,14 @@
                     <label class="form__label" for="name">Full Name <span class="required"
                         aria-label="required">*</span></label>
                     <input class="form__input" type="text" id="name" name="name" placeholder="Enter your name" required
-                      autocomplete="name">
+                      autocomplete="name" aria-describedby="name-error">
                     <span class="form__error" id="name-error" role="alert"></span>
                   </div>
                   <div class="form__group">
                     <label class="form__label" for="mobile">Mobile Number <span class="required"
                         aria-label="required">*</span></label>
                     <input class="form__input" type="tel" id="mobile" name="mobile"
-                      placeholder="Enter your mobile number" required autocomplete="tel" inputmode="tel">
+                      placeholder="Enter your mobile number" required autocomplete="tel" inputmode="tel" aria-describedby="mobile-error">
                     <span class="form__error" id="mobile-error" role="alert"></span>
                   </div>
                 </div>
@@ -626,7 +631,7 @@
                     <label class="form__label" for="email">Email Address <span class="required"
                         aria-label="required">*</span></label>
                     <input class="form__input" type="email" id="email" name="email" placeholder="Enter your email id"
-                      required autocomplete="email" inputmode="email">
+                      required autocomplete="email" inputmode="email" aria-describedby="email-error">
                     <span class="form__error" id="email-error" role="alert"></span>
                   </div>
                 </div>
@@ -635,7 +640,7 @@
                   <div class="form__group">
                     <label class="form__label" for="product">Product Interest <span class="required"
                         aria-label="required">*</span></label>
-                    <select class="form__select" id="product" name="product" required>
+                    <select class="form__select" id="product" name="product" required aria-describedby="product-error">
                       <option value="">Select a product…</option>
                       <option value="oyster">Oyster Mushroom</option>
                       <option value="shiitake">Shiitake Mushroom</option>
@@ -722,7 +727,7 @@
                 </path>
               </svg>
             </a>
-            <a href="#" class="footer__social-link" aria-label="Follow MushClub on Twitter">
+            <a href="https://x.com/themushclub_in" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Follow MushClub on X">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <path

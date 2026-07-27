@@ -139,10 +139,8 @@
     }
 
     // ─── Private: Unlock page scroll ───
-    function unlockScroll(overrideScrollY) {
+    function unlockScroll(targetElement) {
       if (!scrollLocked) return;
-
-      var targetY = (typeof overrideScrollY === 'number') ? overrideScrollY : savedScrollY;
 
       document.body.style.position = '';
       document.body.style.top = '';
@@ -153,9 +151,18 @@
 
       var htmlEl = document.documentElement;
       var prevBehavior = htmlEl.style.scrollBehavior;
-      htmlEl.style.scrollBehavior = 'auto';
-      window.scrollTo(0, targetY);
-      htmlEl.style.scrollBehavior = prevBehavior;
+      htmlEl.style.scrollBehavior = 'auto'; // Force instant jump
+      window.scrollTo(0, savedScrollY); // Instantly restore layout scroll
+
+      if (targetElement) {
+        // Run on next tick after layout is restored to do native smooth scroll
+        setTimeout(function() {
+          htmlEl.style.scrollBehavior = prevBehavior;
+          targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        }, 0);
+      } else {
+        htmlEl.style.scrollBehavior = prevBehavior;
+      }
 
       scrollLocked = false;
     }
@@ -282,7 +289,7 @@
        * Close the currently active overlay.
        * Unlocks scroll and restores focus.
        */
-      close: function (overrideScrollY) {
+      close: function (targetElement) {
         if (!activeOverlay) return;
 
         // Bug #3: cancel any pending focus timer
@@ -290,10 +297,10 @@
 
         removeOverlayDOM(activeOverlay);
         activeOverlay = null;
-        unlockScroll(overrideScrollY);
+        unlockScroll(targetElement);
 
         if (savedFocusElement) {
-          savedFocusElement.focus();
+          savedFocusElement.focus({ preventScroll: true });
           savedFocusElement = null;
         }
       },
@@ -326,7 +333,7 @@
 
   /* Active section tracking */
   var sections = document.querySelectorAll('section[id]');
-  var navLinks = document.querySelectorAll('.nav__link[data-section]');
+  var navLinks = document.querySelectorAll('.nav__link[data-section], .nav__mobile-link[data-section]');
 
   var sectionObserver = new IntersectionObserver(
     function (entries) {
@@ -466,20 +473,11 @@
     // that position so there is exactly ONE scroll, not two.
     var contactSection = document.getElementById('contact');
     if (contactSection) {
-      var navHeight = nav ? nav.offsetHeight : 72;
-      // Use savedScrollY when locked (body is position:fixed, so
-      // getBoundingClientRect is relative to the fixed viewport)
-      var currentScroll = overlayManager.isLocked() ? overlayManager.getSavedScrollY() : window.scrollY;
-      var targetPosition = contactSection.getBoundingClientRect().top + currentScroll - navHeight;
-
       if (overlayManager.isActive()) {
         // Single atomic close + scroll
-        overlayManager.close(targetPosition);
+        overlayManager.close(contactSection);
       } else {
-        window.scrollTo({
-          top: targetPosition,
-          behavior: prefersReducedMotion ? 'auto' : 'smooth'
-        });
+        contactSection.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       }
 
       var nameField = document.getElementById('name');
@@ -494,43 +492,43 @@
      ═══════════════════════════════════════════════════════ */
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-
       var targetId = anchor.getAttribute('href');
       var hadOverlay = overlayManager.isActive();
+      var isEnquireBtn = anchor.classList.contains('nav__cta') || 
+                         anchor.classList.contains('nav__mobile-cta') || 
+                         anchor.classList.contains('btn-secondary') || 
+                         anchor.classList.contains('contact__mobile-btn');
 
+      // 1. Scroll to top for empty anchors
       if (!targetId || targetId === '#') {
-        if (hadOverlay) {
-          overlayManager.close();
-        } else {
-          window.scrollTo({
-            top: 0,
-            behavior: prefersReducedMotion ? 'auto' : 'smooth'
-          });
-        }
+        e.preventDefault();
+        if (hadOverlay) overlayManager.close();
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
         return;
       }
 
-      // Contact link → open enquiry form (handles overlay transitions internally)
-      if (targetId === '#contact') {
+      // 2. Enquire Now CTA buttons -> Open form modal
+      if (isEnquireBtn && targetId === '#contact') {
+        e.preventDefault();
         openEnquiryForm();
         return;
       }
 
+      // 3. Normal Section Navigation
       var target = document.querySelector(targetId);
       if (!target) return;
-      var navHeight = nav ? nav.offsetHeight : 72;
-      var currentScroll = overlayManager.isLocked() ? overlayManager.getSavedScrollY() : window.scrollY;
-      var targetPosition = target.getBoundingClientRect().top + currentScroll - navHeight;
-
+      
+      // If an overlay (like mobile menu) is open, close it and scroll
       if (hadOverlay) {
-        // Close overlay and scroll to target position in one step
-        overlayManager.close(targetPosition);
+        e.preventDefault();
+        overlayManager.close(target); // targetElement scrollIntoView is handled inside close()
       } else {
-        window.scrollTo({
-          top: targetPosition,
-          behavior: prefersReducedMotion ? 'auto' : 'smooth'
-        });
+        // Native CSS smooth scroll + scroll-margin-top will handle it naturally!
+        // No JS preventDefault needed here unless we want to override reduced motion manually.
+        if (prefersReducedMotion) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'auto' });
+        }
       }
     });
   });
@@ -636,7 +634,7 @@
     var modalImage = document.getElementById('modal-image');
     if (modalImage) {
       modalImage.src = product.image;
-      modalImage.alt = product.name + ' \u2014 detailed view';
+      modalImage.alt = 'Fresh organic ' + product.name + ' cultivated at MushClub farm';
     }
 
     // Row 1: Title + Category
