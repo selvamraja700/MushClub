@@ -980,8 +980,6 @@ p {
 
 .about__image {
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
@@ -1203,8 +1201,8 @@ p {
   opacity: 1;
 }
 
-/* STEP 5 — CLOSE BUTTON */
-.modal__close {
+/* STEP 5 — CLOSE BUTTON (Unified Component) */
+.modal-close {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -1213,32 +1211,36 @@ p {
   min-width: 44px;
   min-height: 44px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: transparent;
   color: var(--neutral-700);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 30;
+  z-index: 100;
   border: none;
   cursor: pointer;
-  transition: all 200ms ease;
+  transition: background-color 200ms ease, color 200ms ease, transform 150ms ease;
+  padding: 0;
 }
 
-.modal__close:hover,
-.modal__close:focus-visible {
-  background: #ffffff;
+.modal-close:hover,
+.modal-close:focus-visible {
+  background-color: rgba(0, 0, 0, 0.05);
   color: var(--neutral-900);
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.modal__close svg {
-  width: 18px;
-  height: 18px;
+.modal-close:active {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(0.95);
 }
 
-.form__close {
+.modal-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+#form-close,
+#faq-close {
   display: none;
 }
 
@@ -1534,7 +1536,14 @@ p {
   color: var(--neutral-50);
 }
 
-.contact__header-cta {
+.contact__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  margin-top: var(--space-12);
+}
+
+.contact__mobile-cta-wrapper {
   display: none;
 }
 
@@ -1548,13 +1557,6 @@ p {
 
 .contact .section-subtitle {
   color: rgba(250, 250, 247, 0.7);
-}
-
-.contact__grid {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: var(--space-12);
-  margin-top: var(--space-12);
 }
 
 .contact__info {
@@ -2472,22 +2474,8 @@ p {
     display: none;
   }
 
-  .contact__header-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-  }
-
-  .contact__header-cta {
-    display: block;
-    width: 100%;
-  }
-
   .contact__header-text {
-    flex: 1 1 auto;
-    max-width: 65%;
+    margin-bottom: var(--space-4);
   }
 
   .contact__header-text .section-label {
@@ -2508,11 +2496,10 @@ p {
     margin: 0;
   }
 
-  .contact__header-cta {
+  .contact__mobile-cta-wrapper {
     display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
+    margin-top: var(--space-6);
   }
 
   .contact__mobile-btn {
@@ -2636,38 +2623,8 @@ p {
     width: 100%;
   }
 
-  .form__close {
+  .form-container.modal-active #form-close {
     display: flex;
-    position: absolute;
-    top: var(--space-3);
-    right: var(--space-3);
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-full);
-    color: var(--neutral-900);
-    background: #FFFFFF;
-    border: 1px solid var(--neutral-300);
-    z-index: 10;
-    cursor: pointer;
-    transition: background-color var(--transition-base) var(--ease-default),
-      border-color var(--transition-base) var(--ease-default),
-      color var(--transition-base) var(--ease-default);
-  }
-
-  .form__close:hover,
-  .form__close:focus-visible {
-    background-color: var(--neutral-100);
-    border-color: var(--neutral-500);
-    color: #000000;
-  }
-
-  .form__close svg {
-    width: 16px;
-    height: 16px;
   }
 
   .form__row {
@@ -2797,6 +2754,192 @@ p {
 }
 
 /* ═══════════════════════════════════════════════════════
+   FAQ MOBILE OVERLAY CSS
+   ═══════════════════════════════════════════════════════ */
+.faq__header-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+@media (max-width: 767px) {
+  /* Hide the FAQ in normal page flow on mobile */
+  .faq {
+    display: none;
+  }
+
+  /* When acting as a modal overlay on mobile */
+  .faq.modal-active {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: var(--z-modal);
+    background-color: var(--neutral-50);
+    overflow-y: auto;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+    margin: 0;
+    scroll-margin-top: 0;
+  }
+  
+  .faq.modal-active #faq-close {
+    display: flex;
+  }
+  
+  .faq.modal-active .faq__header-wrapper {
+    margin-bottom: var(--space-6);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROCESSING STATE
+   ═══════════════════════════════════════════════════════ */
+.form__processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  min-height: 350px;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--space-6);
+}
+
+.circular-loader {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto;
+  border: 5px solid var(--neutral-200);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.form__processing-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  color: var(--brand-primary-dark);
+  margin-bottom: var(--space-3);
+  font-weight: 500;
+}
+
+.form__processing-desc {
+  font-size: var(--text-md);
+  color: var(--neutral-600);
+  margin-bottom: var(--space-6);
+  line-height: 1.5;
+}
+
+.form__processing-status {
+  font-size: var(--text-sm);
+  color: var(--brand-primary);
+  font-weight: 500;
+  height: 24px;
+  margin-bottom: var(--space-8);
+  transition: opacity 0.3s ease;
+}
+
+.form__processing-status.fade-out {
+  opacity: 0;
+}
+
+.progress-timeline-wrapper {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto var(--space-6);
+}
+
+.progress-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin-top: var(--space-6);
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  background-color: var(--neutral-300);
+  border-radius: 50%;
+  margin-bottom: var(--space-2);
+  transition: all 0.3s ease;
+}
+
+.progress-label {
+  font-size: 11px;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.progress-line {
+  flex-grow: 1;
+  height: 2px;
+  background-color: var(--neutral-300);
+  margin: 0 -15px;
+  transform: translateY(-8px);
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-dot {
+  background-color: var(--brand-primary);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 4px rgba(45, 90, 61, 0.15);
+}
+
+.progress-step.active .progress-label {
+  color: var(--brand-primary-dark);
+  font-weight: 700;
+}
+
+.progress-line.active {
+  background-color: var(--brand-primary);
+}
+
+.form__processing-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+  color: var(--neutral-500);
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+/* ═══════════════════════════════════════════════════════
    REDUCED MOTION — Accessibility
    ═══════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
@@ -2816,5 +2959,22 @@ p {
   .hero__image-wrapper.animate-hero {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FAQ RELEASE FEATURE
+   ═══════════════════════════════════════════════════════ */
+/* Hide everywhere before release */
+body.faq-unreleased #faq,
+body.faq-unreleased a[href="#faq"] {
+  display: none !important;
+}
+
+/* Permanently hide on mobile */
+@media (max-width: 767px) {
+  #faq,
+  a[href="#faq"] {
+    display: none !important;
   }
 }

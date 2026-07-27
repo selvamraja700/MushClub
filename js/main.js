@@ -6,6 +6,22 @@
 (function () {
   'use strict';
 
+  /* ─── FAQ Release Feature ─── */
+  const FAQ_RELEASE_DATE = "2026-12-01";
+  
+  function initializeFaqFeature() {
+    const releaseDate = new Date(FAQ_RELEASE_DATE).getTime();
+    const now = new Date().getTime();
+    
+    if (now < releaseDate) {
+      document.body.classList.add('faq-unreleased');
+    } else {
+      document.body.classList.add('faq-released');
+    }
+  }
+
+  initializeFaqFeature();
+
   /* ─── Product Data ─── */
   const PRODUCTS = [
     {
@@ -92,6 +108,41 @@
   const formClose = document.getElementById('form-close');
   const submitBtn = document.getElementById('submit-btn');
   const submitAnother = document.getElementById('submit-another');
+  const formProcessing = document.getElementById('form-processing');
+  const formCancel = document.getElementById('form-cancel');
+  const processingStatus = document.getElementById('processing-status');
+  const processingClose = document.getElementById('processing-close');
+  
+  // FAQ Modal
+  const faqContainer = document.getElementById('faq');
+  const faqClose = document.getElementById('faq-close');
+  // Enquiry Form State Machine
+  const PROCESSING_DELAY = 3500; // ms
+  const FORM_STATES = { IDLE: "idle", PROCESSING: "processing", SUCCESS: "success", CANCELLED: "cancelled" };
+  let currentState = FORM_STATES.IDLE;
+  let processingTimer = null;
+  function renderState(state) {
+    // hide all sections
+    if (formContent) formContent.style.display = 'none';
+    if (formProcessing) formProcessing.style.display = 'none';
+    if (formSuccess) formSuccess.classList.remove('active');
+    if (formCancel) formCancel.style.display = 'none';
+    // show based on state
+    switch (state) {
+      case FORM_STATES.IDLE:
+        if (formContent) formContent.style.display = 'block';
+        break;
+      case FORM_STATES.PROCESSING:
+        if (formProcessing) formProcessing.style.display = 'block';
+        break;
+      case FORM_STATES.SUCCESS:
+        if (formSuccess) formSuccess.classList.add('active');
+        break;
+      case FORM_STATES.CANCELLED:
+        if (formCancel) formCancel.style.display = 'block';
+        break;
+    }
+  }
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -721,8 +772,20 @@
 
   // Close mobile enquiry form modal — close button
   if (formClose) {
-    formClose.addEventListener('click', function () {
-      overlayManager.close();
+    formClose.addEventListener('click', function (e) {
+      if (currentState === FORM_STATES.PROCESSING && processingTimer) {
+        clearTimeout(processingTimer);
+        processingTimer = null;
+        isSubmitting = false;
+        if (submitBtn) { submitBtn.classList.remove('loading'); submitBtn.disabled = false; }
+        currentState = FORM_STATES.CANCELLED;
+        renderState(currentState);
+      } else if (currentState === FORM_STATES.SUCCESS || currentState === FORM_STATES.CANCELLED) {
+        overlayManager.close();
+        setTimeout(function () { resetFormState({ preventDefault: function () {} }); }, 300);
+      } else {
+        overlayManager.close();
+      }
     });
   }
 
@@ -802,65 +865,82 @@
 
   function handleFormSubmit(e) {
     if (e) e.preventDefault();
-
-    if (isSubmitting) return; // Double-click protection
-
+    if (isSubmitting) return; // prevent double submit
     if (!enquiryForm) return;
-
-    // Validate all required fields
+    // Validate fields
     var isValid = true;
     enquiryForm.querySelectorAll('.form__input[required], .form__select[required], .form__textarea[required]').forEach(function (field) {
       if (!validateField(field)) isValid = false;
     });
-
     if (!isValid) {
       var firstError = enquiryForm.querySelector('.form__input.error, .form__select.error, .form__textarea.error');
       if (firstError) firstError.focus();
       return;
     }
-
-    // Simulate submission
+    // Transition to processing state
     isSubmitting = true;
+    currentState = FORM_STATES.PROCESSING;
+    renderState(currentState);
     if (submitBtn) {
       submitBtn.classList.add('loading');
       submitBtn.disabled = true;
     }
-
-    setTimeout(function () {
+    // Disable form fields
+    enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) { fld.disabled = true; });
+    // Simulated processing timer
+    processingTimer = setTimeout(function () {
+      // Clear timer reference
+      processingTimer = null;
       isSubmitting = false;
       if (submitBtn) {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
       }
-
+      // Re‑enable fields
+      enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) { fld.disabled = false; });
       saveFormDataToCache();
-
-      if (formContent) formContent.style.display = 'none';
-      if (formSuccess) formSuccess.classList.add('active');
-    }, 1200);
+      currentState = FORM_STATES.SUCCESS;
+      renderState(currentState);
+    }, PROCESSING_DELAY);
   }
 
   if (enquiryForm) {
     enquiryForm.addEventListener('submit', handleFormSubmit);
   }
 
-  // Submit another
+  // Submit another or close success message
+  function resetFormState(e) {
+    e.preventDefault();
+    // Reset to idle state
+    currentState = FORM_STATES.IDLE;
+    renderState(currentState);
+    // Clear any active classes
+    if (formSuccess) formSuccess.classList.remove('active');
+    if (formCancel) formCancel.style.display = 'none';
+    // Reset form fields
+    if (enquiryForm) {
+      enquiryForm.reset();
+      enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
+        field.classList.remove('error', 'valid');
+        field.disabled = false;
+      });
+      enquiryForm.querySelectorAll('.form__error').forEach(function (el) { el.textContent = ''; });
+      loadCachedFormData();
+    }
+    // Clear any pending timer
+    if (processingTimer) { clearTimeout(processingTimer); processingTimer = null; }
+    isSubmitting = false;
+  }
+
   if (submitAnother) {
-    submitAnother.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (formContent) formContent.style.display = 'block';
-      if (formSuccess) formSuccess.classList.remove('active');
-      if (enquiryForm) {
-        enquiryForm.reset();
-        enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
-          field.classList.remove('error', 'valid');
-        });
-        enquiryForm.querySelectorAll('.form__error').forEach(function (el) {
-          el.textContent = '';
-        });
-        loadCachedFormData();
-      }
-    });
+    submitAnother.addEventListener('click', resetFormState);
+  }
+  
+
+  // Cancel return button
+  var cancelReturn = document.getElementById('cancel-return');
+  if (cancelReturn) {
+    cancelReturn.addEventListener('click', resetFormState);
   }
 
   /* ─── Cache Management ─── */
@@ -1022,6 +1102,14 @@
     handleNavScroll();
     loadCachedFormData();
     initTypewriterGreeting();
+
+    var mobileEnquireBtn = document.getElementById('mobile-enquire-btn');
+    if (mobileEnquireBtn) {
+      mobileEnquireBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        openEnquiryForm();
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
