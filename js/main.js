@@ -119,10 +119,15 @@
     var savedScrollY = 0;
     var scrollLocked = false;
     var savedFocusElement = null;
+    var focusTimerId = null;    // Bug #3: track focus timer to cancel on rapid switches
 
     // ─── Private: Lock page scroll ───
+    // Bug #5 fix: read scrollY BEFORE setting position:fixed.
+    // On rapid close→reopen, pageYOffset is 0 because body is still fixed.
+    // Guard: only capture when NOT already locked.
     function lockScroll() {
       if (scrollLocked) return;
+      // Read the real scroll position while body is still in normal flow
       savedScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       document.body.style.position = 'fixed';
       document.body.style.top = '-' + savedScrollY + 'px';
@@ -137,14 +142,14 @@
     function unlockScroll(overrideScrollY) {
       if (!scrollLocked) return;
 
+      var targetY = (typeof overrideScrollY === 'number') ? overrideScrollY : savedScrollY;
+
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
       document.body.style.overflow = '';
       document.body.classList.remove('menu-open');
       document.documentElement.classList.remove('menu-open');
-
-      var targetY = (typeof overrideScrollY === 'number') ? overrideScrollY : savedScrollY;
 
       var htmlEl = document.documentElement;
       var prevBehavior = htmlEl.style.scrollBehavior;
@@ -155,7 +160,17 @@
       scrollLocked = false;
     }
 
+    // ─── Private: Cancel any pending focus timer ───
+    // Bug #3 fix: prevents stale focus() calls after rapid overlay switches
+    function cancelFocusTimer() {
+      if (focusTimerId !== null) {
+        clearTimeout(focusTimerId);
+        focusTimerId = null;
+      }
+    }
+
     // ─── Private: Apply DOM classes + ARIA for an overlay ───
+    // Bug #2 fix: explicitly set pointer-events:auto on the overlay element
     function applyOverlayDOM(name) {
       if (name === 'mobile-menu') {
         if (hamburger) {
@@ -166,26 +181,25 @@
         if (mobileMenu) {
           mobileMenu.classList.add('open');
           mobileMenu.setAttribute('aria-hidden', 'false');
+          mobileMenu.style.pointerEvents = 'auto';
         }
       } else if (name === 'product-modal') {
         if (modalOverlay) {
           modalOverlay.classList.add('active');
           modalOverlay.setAttribute('aria-hidden', 'false');
+          modalOverlay.style.pointerEvents = 'auto';
         }
       } else if (name === 'enquiry-form') {
         if (formContainer) {
           formContainer.classList.add('modal-active');
-          // Force visibility — the form-container has animate-on-scroll which
-          // starts at opacity:0. On mobile, IntersectionObserver never fires
-          // for it because it's display:none, so .visible is never added.
-          formContainer.classList.add('visible');
-          formContainer.style.opacity = '1';
-          formContainer.style.transform = 'none';
+          formContainer.style.pointerEvents = 'auto';
         }
       }
     }
 
     // ─── Private: Remove DOM classes + ARIA for an overlay ───
+    // Bug #1 fix: set pointer-events:none so the closing/transitioning
+    // overlay cannot intercept touches during its CSS transition-out
     function removeOverlayDOM(name) {
       if (name === 'mobile-menu') {
         if (hamburger) {
@@ -196,15 +210,18 @@
         if (mobileMenu) {
           mobileMenu.classList.remove('open');
           mobileMenu.setAttribute('aria-hidden', 'true');
+          mobileMenu.style.pointerEvents = 'none';
         }
       } else if (name === 'product-modal') {
         if (modalOverlay) {
           modalOverlay.classList.remove('active');
           modalOverlay.setAttribute('aria-hidden', 'true');
+          modalOverlay.style.pointerEvents = 'none';
         }
       } else if (name === 'enquiry-form') {
         if (formContainer) {
           formContainer.classList.remove('modal-active');
+          formContainer.style.pointerEvents = 'none';
         }
       }
     }
@@ -218,6 +235,9 @@
        */
       open: function (name) {
         if (activeOverlay === name) return;
+
+        // Bug #3: cancel any pending focus timer from the previous overlay
+        cancelFocusTimer();
 
         // Transition: close previous overlay without unlocking scroll
         if (activeOverlay) {
@@ -233,12 +253,20 @@
         applyOverlayDOM(name);
         lockScroll();
 
-        // Focus management per overlay type
+        // Bug #3 fix: focus management with cancellable timer
         if (name === 'product-modal' && modalClose) {
-          setTimeout(function () { modalClose.focus(); }, 100);
+          focusTimerId = setTimeout(function () {
+            focusTimerId = null;
+            if (activeOverlay === 'product-modal') modalClose.focus();
+          }, 100);
         } else if (name === 'enquiry-form') {
-          var nameField = document.getElementById('name');
-          setTimeout(function () { if (nameField) nameField.focus(); }, 150);
+          focusTimerId = setTimeout(function () {
+            focusTimerId = null;
+            if (activeOverlay === 'enquiry-form') {
+              var nameField = document.getElementById('name');
+              if (nameField) nameField.focus();
+            }
+          }, 150);
         }
       },
 
@@ -256,6 +284,9 @@
        */
       close: function (overrideScrollY) {
         if (!activeOverlay) return;
+
+        // Bug #3: cancel any pending focus timer
+        cancelFocusTimer();
 
         removeOverlayDOM(activeOverlay);
         activeOverlay = null;
@@ -332,14 +363,35 @@
     });
   }
 
-  // Close mobile menu when clicking outside the drawer
+  /* ═══════════════════════════════════════════════════════
+     CENTRALIZED OVERLAY HANDLERS
+     ═══════════════════════════════════════════════════════ */
   document.addEventListener('click', function (e) {
-    if (
-      overlayManager.getActive() === 'mobile-menu' &&
-      mobileMenu && hamburger &&
-      !mobileMenu.contains(e.target) &&
-      !hamburger.contains(e.target)
-    ) {
+    if (!overlayManager.isActive()) return;
+
+    var active = overlayManager.getActive();
+
+    if (active === 'mobile-menu' && mobileMenu && hamburger) {
+      if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        overlayManager.close();
+      }
+    } else if (active === 'product-modal' && modalOverlay) {
+      if (e.target === modalOverlay) {
+        currentProduct = null;
+        overlayManager.close();
+      }
+    } else if (active === 'enquiry-form' && formContainer) {
+      if (e.target === formContainer) {
+        overlayManager.close();
+      }
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlayManager.isActive()) {
+      if (overlayManager.getActive() === 'product-modal') {
+        currentProduct = null;
+      }
       overlayManager.close();
     }
   });
@@ -352,6 +404,9 @@
   });
 
   /* ─── Open Enquiry Form Controller ─── */
+  // Bug #4 fix: desktop path now computes target position BEFORE closing
+  // the overlay, then uses overlayManager.close(targetPosition) to do a
+  // single atomic scroll instead of two conflicting scrollTo calls.
   function openEnquiryForm(productPayload) {
     // Pre-select product if provided
     if (productPayload) {
@@ -372,21 +427,30 @@
       return;
     }
 
-    // Desktop: close any overlay and smooth scroll to contact section
-    if (overlayManager.isActive()) {
-      overlayManager.close();
-    }
-
+    // Desktop: compute target position FIRST, then close overlay with
+    // that position so there is exactly ONE scroll, not two.
     var contactSection = document.getElementById('contact');
     if (contactSection) {
       var navHeight = nav ? nav.offsetHeight : 72;
-      var targetPosition = contactSection.getBoundingClientRect().top + window.scrollY - navHeight;
-      window.scrollTo({
-        top: targetPosition,
-        behavior: prefersReducedMotion ? 'auto' : 'smooth'
-      });
+      // Use savedScrollY when locked (body is position:fixed, so
+      // getBoundingClientRect is relative to the fixed viewport)
+      var currentScroll = overlayManager.isLocked() ? overlayManager.getSavedScrollY() : window.scrollY;
+      var targetPosition = contactSection.getBoundingClientRect().top + currentScroll - navHeight;
+
+      if (overlayManager.isActive()) {
+        // Single atomic close + scroll
+        overlayManager.close(targetPosition);
+      } else {
+        window.scrollTo({
+          top: targetPosition,
+          behavior: prefersReducedMotion ? 'auto' : 'smooth'
+        });
+      }
+
       var nameField = document.getElementById('name');
       setTimeout(function () { if (nameField) nameField.focus(); }, 600);
+    } else if (overlayManager.isActive()) {
+      overlayManager.close();
     }
   }
 
@@ -499,13 +563,13 @@
 
       card.innerHTML =
         '<div class="product-card__image-container">' +
-          '<img class="product-card__image" src="' + product.image + '" alt="' + product.name + ' \u2014 ' + product.brief + '" loading="lazy" width="300" height="225">' +
+        '<img class="product-card__image" src="' + product.image + '" alt="' + product.name + ' \u2014 ' + product.brief + '" loading="lazy" width="300" height="225">' +
         '</div>' +
         '<div class="product-card__content">' +
-          '<span class="product-card__badge">' + product.badge + '</span>' +
-          '<h3 class="product-card__name">' + product.name + '</h3>' +
-          '<p class="product-card__desc">' + product.brief + '</p>' +
-          '<span class="product-card__link">View Details <span aria-hidden="true">\u2192</span></span>' +
+        '<span class="product-card__badge">' + product.badge + '</span>' +
+        '<h3 class="product-card__name">' + product.name + '</h3>' +
+        '<p class="product-card__desc">' + product.brief + '</p>' +
+        '<span class="product-card__link">View Details <span aria-hidden="true">\u2192</span></span>' +
         '</div>';
 
       card.addEventListener('click', function () { openProductModal(product); });
@@ -595,25 +659,7 @@
     });
   }
 
-  // Product modal backdrop click
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', function (e) {
-      if (e.target === modalOverlay) {
-        overlayManager.close();
-        currentProduct = null;
-      }
-    });
-  }
 
-  // Global Escape key — closes whatever overlay is active
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && overlayManager.isActive()) {
-      if (overlayManager.getActive() === 'product-modal') {
-        currentProduct = null;
-      }
-      overlayManager.close();
-    }
-  });
 
   // Focus trap for product modal
   if (modalOverlay) {
@@ -647,14 +693,7 @@
     });
   }
 
-  // Close mobile enquiry form modal — backdrop click
-  if (formContainer) {
-    formContainer.addEventListener('click', function (e) {
-      if (e.target === formContainer) {
-        overlayManager.close();
-      }
-    });
-  }
+
 
   /* ═══════════════════════════════════════════════════════
      ENQUIRY FORM — Validation + Submission
@@ -671,7 +710,7 @@
       message: 'Please enter a valid mobile number.'
     },
     email: {
-      required: false,
+      required: true,
       validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
       message: 'Please enter a valid email address.'
     },
