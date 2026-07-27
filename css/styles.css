@@ -129,7 +129,13 @@ html {
   max-width: 100vw;
 }
 
-section, .hero, .products, .why-us, .faq, .about, .contact {
+section,
+.hero,
+.products,
+.why-us,
+.faq,
+.about,
+.contact {
   scroll-margin-top: 72px;
 }
 
@@ -325,7 +331,8 @@ p {
   display: block;
   width: 100%;
   max-width: 100%;
-  align-self: stretch; /* override parent flex align-items:center */
+  align-self: stretch;
+  /* override parent flex align-items:center */
   text-align: left;
   padding: 0 var(--space-2);
   margin-bottom: var(--space-3);
@@ -357,8 +364,15 @@ p {
 }
 
 @keyframes aiCursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1984,8 +1998,17 @@ p {
 }
 
 @keyframes pulseStatus {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
 }
 
 .footer__status-text {
