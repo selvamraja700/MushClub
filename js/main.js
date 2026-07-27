@@ -359,6 +359,7 @@
         overlayManager.close();
       } else {
         overlayManager.open('mobile-menu');
+        initTypewriterGreeting();
       }
     });
   }
@@ -388,11 +389,45 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && overlayManager.isActive()) {
+    if (!overlayManager.isActive()) return;
+
+    if (e.key === 'Escape') {
       if (overlayManager.getActive() === 'product-modal') {
         currentProduct = null;
       }
       overlayManager.close();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      var activeName = overlayManager.getActive();
+      var container = null;
+      if (activeName === 'mobile-menu') container = mobileMenu;
+      else if (activeName === 'product-modal') container = modalOverlay;
+      else if (activeName === 'enquiry-form') container = formContainer;
+
+      if (!container) return;
+
+      var focusables = Array.prototype.slice.call(
+        container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      ).filter(function (el) { return el.offsetWidth > 0 || el.offsetHeight > 0; });
+
+      if (focusables.length === 0) return;
+
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first || !container.contains(document.activeElement)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !container.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
   });
 
@@ -855,9 +890,129 @@
     var mobileField = document.getElementById('mobile');
     var emailField = document.getElementById('email');
 
-    if (nameField) localStorage.setItem('mushclub_name', nameField.value.trim());
+    if (nameField && nameField.value.trim()) {
+      localStorage.setItem('mushclub_name', nameField.value.trim());
+      initTypewriterGreeting();
+    }
     if (mobileField) localStorage.setItem('mushclub_mobile', mobileField.value.trim());
     if (emailField) localStorage.setItem('mushclub_email', emailField.value.trim());
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     PRODUCTION AI STREAMING TEXT ENGINE (rAF 60FPS)
+     ═══════════════════════════════════════════════════════ */
+  var AIStreamingText = (function () {
+    var activeAnimationFrame = null;
+    var postBlinkTimer = null;
+
+    return {
+      stream: function (options) {
+        var element = options.element;
+        var cursor = options.cursor;
+        var text = options.text || '';
+        var speed = options.speed || 30; // ms per character
+        var onComplete = options.onComplete;
+
+        if (!element) return;
+
+        // Cancel previous rAF frame and timers
+        if (activeAnimationFrame) {
+          cancelAnimationFrame(activeAnimationFrame);
+          activeAnimationFrame = null;
+        }
+        if (postBlinkTimer) {
+          clearTimeout(postBlinkTimer);
+          postBlinkTimer = null;
+        }
+
+        // Accessibility: Check prefers-reduced-motion
+        var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+          element.textContent = text;
+          if (cursor) cursor.style.display = 'none';
+          if (typeof onComplete === 'function') onComplete();
+          return;
+        }
+
+        // Reset element and cursor
+        element.textContent = '';
+        if (cursor) {
+          cursor.style.display = 'inline-block';
+          cursor.style.opacity = '1';
+        }
+
+        var index = 0;
+        var lastTime = performance.now();
+        var accumulatedTime = 0;
+
+        function step(now) {
+          var delta = now - lastTime;
+          lastTime = now;
+          accumulatedTime += delta;
+
+          while (accumulatedTime >= speed && index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+            accumulatedTime -= speed;
+          }
+
+          if (index < text.length) {
+            activeAnimationFrame = requestAnimationFrame(step);
+          } else {
+            activeAnimationFrame = null;
+            if (cursor) {
+              postBlinkTimer = setTimeout(function () {
+                if (cursor) cursor.style.display = 'none';
+              }, 2500);
+            }
+            if (typeof onComplete === 'function') {
+              onComplete();
+            }
+          }
+        }
+
+        activeAnimationFrame = requestAnimationFrame(step);
+      }
+    };
+  })();
+
+  function initTypewriterGreeting() {
+    var textElement = document.getElementById('typewriter-text');
+    var cursorElement = document.getElementById('typewriter-cursor');
+    var mobileGreetingEl = document.getElementById('mobile-typewriter-greeting');
+    if (!textElement) return;
+
+    var cachedName = localStorage.getItem('mushclub_name');
+    var fullText = '';
+
+    if (cachedName && cachedName.trim().length > 0) {
+      var nameParts = cachedName.trim().split(' ');
+      var displayName = nameParts[0];
+      var hour = new Date().getHours();
+      var greeting = 'Good Morning';
+      if (hour >= 12 && hour < 17) {
+        greeting = 'Good Afternoon';
+      } else if (hour >= 17) {
+        greeting = 'Good Evening';
+      }
+      fullText = greeting + ', ' + displayName + '! Welcome to MushClub';
+    } else {
+      fullText = 'Welcome to MushClub';
+    }
+
+    if (mobileGreetingEl) {
+      mobileGreetingEl.textContent = fullText;
+    }
+
+    // Text alignment is always left — no dynamic centering.
+    // This ensures the typewriter left edge stays fixed (like ChatGPT).
+
+    AIStreamingText.stream({
+      element: textElement,
+      cursor: cursorElement,
+      text: fullText,
+      speed: 30
+    });
   }
 
   /* ═══════════════════════════════════════════════════════
@@ -868,6 +1023,7 @@
     initScrollAnimations();
     handleNavScroll();
     loadCachedFormData();
+    initTypewriterGreeting();
   }
 
   if (document.readyState === 'loading') {
