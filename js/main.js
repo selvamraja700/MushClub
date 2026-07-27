@@ -8,11 +8,11 @@
 
   /* ─── FAQ Release Feature ─── */
   const FAQ_RELEASE_DATE = "2026-12-01";
-  
+
   function initializeFaqFeature() {
     const releaseDate = new Date(FAQ_RELEASE_DATE).getTime();
     const now = new Date().getTime();
-    
+
     if (now < releaseDate) {
       document.body.classList.add('faq-unreleased');
     } else {
@@ -24,23 +24,6 @@
 
   /* ─── Product Data ─── */
   const PRODUCTS = [
-    {
-      id: 'button',
-      name: 'Fresh Button Mushroom',
-      category: 'Everyday',
-      badge: 'Everyday',
-      brief: 'The classic versatile mushroom ideal for every kitchen and recipe.',
-      description: 'Our fresh Button Mushrooms are grown in enriched compost substrates, producing firm, white specimens with a clean taste and satisfying snap.',
-      nutrition: [
-        'High in selenium',
-        'Good source of vitamin B2',
-        'Low calorie with high water content',
-        'Rich in potassium and phosphorus',
-        'Contains conjugated linoleic acid (CLA)'
-      ],
-      forms: ['Fresh', 'Sliced', 'Bulk'],
-      image: 'https://ik.imagekit.io/Selvamraj700/MushClub/Mushroom.png'
-    },
     {
       id: 'oyster',
       name: 'Oyster Mushroom',
@@ -112,12 +95,12 @@
   const formCancel = document.getElementById('form-cancel');
   const processingStatus = document.getElementById('processing-status');
   const processingClose = document.getElementById('processing-close');
-  
+
   // FAQ Modal
   const faqContainer = document.getElementById('faq');
   const faqClose = document.getElementById('faq-close');
   // Enquiry Form State Machine
-  const PROCESSING_DELAY = 3500; // ms
+  const PROCESSING_DELAY = 1500; // ms
   const FORM_STATES = { IDLE: "idle", PROCESSING: "processing", SUCCESS: "success", CANCELLED: "cancelled" };
   let currentState = FORM_STATES.IDLE;
   let processingTimer = null;
@@ -207,7 +190,7 @@
 
       if (targetElement) {
         // Run on next tick after layout is restored to do native smooth scroll
-        setTimeout(function() {
+        setTimeout(function () {
           htmlEl.style.scrollBehavior = prevBehavior;
           targetElement.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
         }, 0);
@@ -545,10 +528,10 @@
     anchor.addEventListener('click', function (e) {
       var targetId = anchor.getAttribute('href');
       var hadOverlay = overlayManager.isActive();
-      var isEnquireBtn = anchor.classList.contains('nav__cta') || 
-                         anchor.classList.contains('nav__mobile-cta') || 
-                         anchor.classList.contains('btn-secondary') || 
-                         anchor.classList.contains('contact__mobile-btn');
+      var isEnquireBtn = anchor.classList.contains('nav__cta') ||
+        anchor.classList.contains('nav__mobile-cta') ||
+        anchor.classList.contains('btn-secondary') ||
+        anchor.classList.contains('contact__mobile-btn');
 
       // 1. Scroll to top for empty anchors
       if (!targetId || targetId === '#') {
@@ -568,7 +551,7 @@
       // 3. Normal Section Navigation
       var target = document.querySelector(targetId);
       if (!target) return;
-      
+
       // If an overlay (like mobile menu) is open, close it and scroll
       if (hadOverlay) {
         e.preventDefault();
@@ -782,7 +765,7 @@
         renderState(currentState);
       } else if (currentState === FORM_STATES.SUCCESS || currentState === FORM_STATES.CANCELLED) {
         overlayManager.close();
-        setTimeout(function () { resetFormState({ preventDefault: function () {} }); }, 300);
+        setTimeout(function () { resetFormState({ preventDefault: function () { } }); }, 300);
       } else {
         overlayManager.close();
       }
@@ -797,23 +780,28 @@
   var validationRules = {
     name: {
       required: true,
-      validate: function (v) { return v.trim().length >= 2; },
-      message: 'Please enter your full name (at least 2 characters).'
+      validate: function (v) { return /^[A-Za-z\s]{2,15}$/.test(v.trim()); },
+      message: 'Letters only, max 15 chars.'
     },
     mobile: {
       required: true,
-      validate: function (v) { return /^[\d\s\+\-()]{7,}$/.test(v.trim()); },
-      message: 'Please enter a valid mobile number.'
+      validate: function (v) { return /^[0-9]{10}$/.test(v.trim()); },
+      message: 'Enter a valid 10-digit number.'
     },
     email: {
-      required: true,
+      required: false,
       validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
-      message: 'Please enter a valid email address.'
+      message: 'Enter a valid email address.'
     },
     product: {
       required: true,
       validate: function (v) { return v.trim() !== ''; },
       message: 'Please select a product of interest.'
+    },
+    quantity: {
+      required: true,
+      validate: function (v) { return v.trim() !== ''; },
+      message: 'Please provide an estimated quantity.'
     }
   };
 
@@ -901,6 +889,13 @@
       saveFormDataToCache();
       currentState = FORM_STATES.SUCCESS;
       renderState(currentState);
+      
+      // Auto-reset after 3 seconds
+      setTimeout(function () {
+        if (currentState === FORM_STATES.SUCCESS) {
+          resetFormState({ preventDefault: function () {} });
+        }
+      }, 3000);
     }, PROCESSING_DELAY);
   }
 
@@ -935,7 +930,7 @@
   if (submitAnother) {
     submitAnother.addEventListener('click', resetFormState);
   }
-  
+
 
   // Cancel return button
   var cancelReturn = document.getElementById('cancel-return');
@@ -1105,7 +1100,7 @@
 
     var mobileEnquireBtn = document.getElementById('mobile-enquire-btn');
     if (mobileEnquireBtn) {
-      mobileEnquireBtn.addEventListener('click', function(e) {
+      mobileEnquireBtn.addEventListener('click', function (e) {
         e.preventDefault();
         openEnquiryForm();
       });

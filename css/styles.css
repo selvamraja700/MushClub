@@ -540,8 +540,8 @@ p {
   font-family: var(--font-body);
   font-size: var(--text-sm);
   font-weight: 700;
-  color: #FFFFFF;
-  background-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background-color: #FDFBF7;
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-full);
   transition: background-color var(--transition-base) var(--ease-default),
@@ -551,12 +551,12 @@ p {
 
 .nav__cta:hover,
 .nav__cta:focus-visible {
-  background-color: var(--brand-primary-light);
+  background-color: #F0EAD6;
   box-shadow: var(--shadow-md);
 }
 
 .nav__cta:active {
-  background-color: var(--brand-primary-dark);
+  background-color: #E3D9C0;
   transform: scale(0.97);
 }
 
@@ -830,8 +830,8 @@ p {
   font-family: var(--font-body);
   font-weight: 700;
   font-size: var(--text-base);
-  color: #FFFFFF;
-  background-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background-color: #FDFBF7;
   padding: var(--space-4) var(--space-8);
   min-height: 44px;
   min-width: 44px;
@@ -846,15 +846,28 @@ p {
 
 .btn-primary:hover,
 .btn-primary:focus-visible {
-  background-color: var(--brand-primary-light);
+  background-color: #F0EAD6;
   box-shadow: var(--shadow-lg);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
-  background-color: var(--brand-primary-dark);
+  background-color: #E3D9C0;
   transform: translateY(0) scale(0.98);
   box-shadow: var(--shadow-sm);
+}
+
+/* Override for buttons inside the white form modal */
+.form-container .btn-primary {
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+}
+.form-container .btn-primary:hover,
+.form-container .btn-primary:focus-visible {
+  background-color: var(--brand-primary-light);
+}
+.form-container .btn-primary:active {
+  background-color: var(--brand-primary-dark);
 }
 
 .btn-primary:focus-visible {
@@ -1048,7 +1061,7 @@ p {
 
 .products__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-8);
   margin-top: var(--space-12);
 }
@@ -2766,6 +2779,7 @@ p {
 
 
 @media (max-width: 767px) {
+
   /* Hide the FAQ in normal page flow on mobile */
   .faq {
     display: none;
@@ -2790,11 +2804,11 @@ p {
     margin: 0;
     scroll-margin-top: 0;
   }
-  
+
   .faq.modal-active #faq-close {
     display: flex;
   }
-  
+
   .faq.modal-active .faq__header-wrapper {
     margin-bottom: var(--space-6);
   }
@@ -2832,7 +2846,9 @@ p {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .form__processing-title {
@@ -2973,6 +2989,7 @@ body.faq-unreleased a[href="#faq"] {
 
 /* Permanently hide on mobile */
 @media (max-width: 767px) {
+
   #faq,
   a[href="#faq"] {
     display: none !important;
