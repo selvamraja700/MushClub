@@ -1,0 +1,36 @@
+{
+  "name": "MushClub",
+  "legalName": "MushClub",
+  "url": "https://mushclubb.netlify.app/",
+  "logo": "https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg",
+  "description": "MushClub is a premium mushroom cultivation and supply company specializing in fresh, organically grown mushrooms for households, restaurants, wholesalers, and commercial growers.",
+  "location": {
+    "@type": "PostalAddress",
+    "streetAddress": "Abishekapatti",
+    "addressLocality": "Tirunelveli",
+    "addressRegion": "Tamil Nadu",
+    "addressCountry": "India"
+  },
+  "contact": {
+    "phoneNumbers": [
+      "+91 7395841171",
+      "+91 6369148797",
+      "+91 7708951522"
+    ],
+    "email": "themushclub.in@gmail.com",
+    "support": "24/7 Chat Support",
+    "hours": "8:00 AM – 8:00 PM"
+  },
+  "socials": {
+    "instagram": "https://www.instagram.com/themushclub.in/?hl=en",
+    "whatsapp": "https://wa.me/917395841171",
+    "twitter": "https://x.com/themushclub_in"
+  },
+  "qualityStandards": [
+    "Chemical-free cultivation",
+    "Lab-tested purity",
+    "Climate-controlled grow rooms",
+    "Cold-chain delivery",
+    "Premium quality"
+  ]
+}

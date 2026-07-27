@@ -1,0 +1,42 @@
+# MushClub
+
+## Business Description
+MushClub is a premium mushroom cultivation and supply company specializing in fresh, organically grown mushrooms for households, restaurants, wholesalers, and commercial growers.
+
+## Products
+- Fresh Button Mushrooms
+- Gourmet Oyster Mushrooms
+- Premium Grain Spawn
+- 100% Natural Hardwood Substrate Pellets
+
+## Services
+- Organic Mushroom Cultivation
+- Wholesale Supply
+- Restaurant Supply
+- Commercial Grower Supply
+- Spawn Production
+
+## Website URL
+https://mushclubb.netlify.app/
+
+## Contact Information
+Phone: +91 7395841171, +91 6369148797, +91 7708951522
+Email: themushclub.in@gmail.com
+Address: Abishekapatti, Tirunelveli, Tamil Nadu, India
+Hours: 8:00 AM - 8:00 PM, 24/7 Chat Support
+
+## Important URLs
+Home: https://mushclubb.netlify.app/
+AI Knowledge Page: https://mushclubb.netlify.app/ai.html
+About Us: https://mushclubb.netlify.app/about.html
+FAQ: https://mushclubb.netlify.app/faq.html
+Products: https://mushclubb.netlify.app/products.html
+Services: https://mushclubb.netlify.app/services.html
+
+## Machine Readable Data
+Company JSON: https://mushclubb.netlify.app/company.json
+Products JSON: https://mushclubb.netlify.app/products.json
+Services JSON: https://mushclubb.netlify.app/services.json
+FAQ JSON: https://mushclubb.netlify.app/faq.json
+Full Knowledge Base: https://mushclubb.netlify.app/knowledge-base.json
+AI Context: https://mushclubb.netlify.app/ai-context.txt

@@ -1,0 +1,23 @@
+{
+  "name": "MushClubb — Premium Mushroom Solutions",
+  "short_name": "MushClubb",
+  "description": "Cultivating premium, organic mushrooms with farm-to-table freshness.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCFCFC",
+  "theme_color": "#2D5A3D",
+  "icons": [
+    {
+      "src": "https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

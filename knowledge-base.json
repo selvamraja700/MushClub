@@ -1,0 +1,51 @@
+{
+  "company": {
+    "name": "MushClub",
+    "description": "MushClub is a premium mushroom cultivation and supply company specializing in fresh, organically grown mushrooms for households, restaurants, wholesalers, and commercial growers.",
+    "mission": "To make fresh, organic mushrooms accessible to everyone — from local kitchens to family dinner tables.",
+    "vision": "To be the leading standard in organic mycological cultivation and sustainable farming.",
+    "qualityStandards": [
+      "Chemical-free cultivation",
+      "Lab-tested purity",
+      "Climate-controlled grow rooms",
+      "Cold-chain delivery",
+      "Premium quality"
+    ]
+  },
+  "location": {
+    "address": "Abishekapatti, Tirunelveli, Tamil Nadu, India"
+  },
+  "contact": {
+    "phones": [
+      "+91 7395841171",
+      "+91 6369148797",
+      "+91 7708951522"
+    ],
+    "email": "themushclub.in@gmail.com"
+  },
+  "hours": {
+    "operations": "8:00 AM – 8:00 PM",
+    "support": "24/7 Chat Support"
+  },
+  "products": [
+    "Fresh Button Mushrooms",
+    "Oyster Mushroom Training Kit",
+    "Gourmet Oyster Mushrooms",
+    "Premium Grain Spawn",
+    "100% Natural Hardwood Substrate Pellets"
+  ],
+  "services": [
+    "Organic Mushroom Cultivation",
+    "Wholesale Supply",
+    "Restaurant Supply",
+    "Commercial Grower Supply",
+    "Spawn Production"
+  ],
+  "faq": [
+    {
+      "question": "Are MushClub mushrooms organic and lab-tested?",
+      "answer": "Yes. 100% of our mushrooms are grown in clean, chemical-free organic substrates inside sterile, climate-monitored grow rooms. Every harvest is lab-tested for purity."
+    }
+  ],
+  "about": "MushClub was born from a deep passion for mycology and a commitment to bringing the freshest mushroom varieties to your table. What started as a small growing project has blossomed into a dedicated supplier of fresh mushrooms — serving local restaurants, health-conscious families, and mushroom enthusiasts across the region. We believe that every mushroom tells a story of patience, precision, and care. Our climate-controlled growing rooms, combined with careful attention to mycological purity, ensure that each harvest meets the highest standards of quality and freshness."
+}

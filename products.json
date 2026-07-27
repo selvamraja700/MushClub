@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Fresh Button Mushrooms",
+    "description": "High-quality, freshly harvested white button mushrooms grown in climate-controlled environments.",
+    "category": "Fresh Mushrooms"
+  },
+  {
+    "name": "Gourmet Oyster Mushrooms",
+    "description": "Delicate, flavorful gourmet oyster mushrooms cultivated organically for premium culinary use.",
+    "category": "Fresh Mushrooms"
+  },
+  {
+    "name": "Oyster Mushroom Training Kit",
+    "description": "Everything you need to start growing your own oyster mushrooms at home. Includes premium spawn, substrate, spray bottle, and grow bags.",
+    "category": "Cultivation Supplies"
+  },
+  {
+    "name": "Premium Grain Spawn",
+    "description": "High-yield, lab-tested premium grain spawn designed for commercial and home mushroom growers.",
+    "category": "Cultivation Supplies"
+  },
+  {
+    "name": "100% Natural Hardwood Substrate Pellets",
+    "description": "Chemical-free, 100% natural hardwood substrate pellets ideal for optimal mushroom growth.",
+    "category": "Cultivation Supplies"
+  }
+]

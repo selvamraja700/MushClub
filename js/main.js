@@ -6,6 +6,17 @@
 (function () {
   'use strict';
 
+  /* ─── Service Worker Registration ─── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((registration) => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, (err) => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+
   /* ─── FAQ Release Feature ─── */
   const FAQ_RELEASE_DATE = "2026-12-01";
 
@@ -40,6 +51,23 @@
       ],
       forms: ['Fresh', 'Dried', 'Powdered'],
       image: 'https://ik.imagekit.io/Selvamraj700/MushClub/Oyster.png'
+    },
+    {
+      id: 'training-kit',
+      name: 'Oyster Mushroom Training Kit',
+      category: 'Cultivation',
+      badge: 'Starter Kit',
+      brief: 'Everything you need to start growing your own oyster mushrooms at home.',
+      description: 'The perfect starter kit for beginners. Includes premium oyster mushroom spawn, sterilized hardwood substrate, a spray bottle, and grow bags. Learn the art of mycology hands-on with our easy-to-follow training guide.',
+      nutrition: [
+        'Complete cultivation setup',
+        'Premium spawn and substrate',
+        'Includes spray bottle and bags',
+        'Beginner friendly',
+        'High success rate'
+      ],
+      forms: ['Standard Kit'],
+      image: 'https://ik.imagekit.io/Selvamraj700/oy%20msuhrrom%20training%20kit%20-_2_.jpeg'
     },
     {
       id: 'spawn',
@@ -493,12 +521,9 @@
       }
     }
 
-    var isMobile = window.innerWidth < MOBILE_BREAKPOINT;
     var formHidden = formContainer && getComputedStyle(formContainer).display === 'none';
-
-    if ((isMobile || formHidden) && formContainer) {
-      // Mobile/hidden: open as modal overlay
-      // overlayManager.open() handles closing any current overlay seamlessly
+    if (formHidden && formContainer) {
+      // Only open as modal if it's explicitly hidden (e.g. some edge case CSS)
       overlayManager.open('enquiry-form');
       return;
     }
@@ -780,8 +805,8 @@
   var validationRules = {
     name: {
       required: true,
-      validate: function (v) { return /^[A-Za-z\s]{2,15}$/.test(v.trim()); },
-      message: 'Letters only, max 15 chars.'
+      validate: function (v) { return /^[A-Za-z\s]{2,20}$/.test(v.trim()); },
+      message: 'Letters only, max 20 chars.'
     },
     mobile: {
       required: true,
@@ -789,7 +814,7 @@
       message: 'Enter a valid 10-digit number.'
     },
     email: {
-      required: false,
+      required: true,
       validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
       message: 'Enter a valid email address.'
     },
@@ -800,8 +825,13 @@
     },
     quantity: {
       required: true,
-      validate: function (v) { return v.trim() !== ''; },
-      message: 'Please provide an estimated quantity.'
+      validate: function (v) { return v.trim() !== '' && v.trim().length <= 15; },
+      message: 'Please provide an estimated quantity (max 15 chars).'
+    },
+    message: {
+      required: false,
+      validate: function (v) { return v.trim().length <= 350; },
+      message: 'Message cannot exceed 350 characters.'
     }
   };
 
@@ -839,6 +869,15 @@
       field.addEventListener('input', function () {
         if (field.classList.contains('error')) {
           validateField(field);
+        }
+        
+        // Name field warning indicator if > 15 chars
+        if (field.name === 'name') {
+          if (field.value.length > 15) {
+            field.classList.add('warning');
+          } else {
+            field.classList.remove('warning');
+          }
         }
       });
       // <select> elements fire 'change', not 'input', in most browsers
