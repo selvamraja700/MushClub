@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mushclub-cache-v4';
+const CACHE_NAME = 'mushclub-cache-v16';
 const OFFLINE_URL = 'offline.html';
 
 const ASSETS_TO_CACHE = [
@@ -7,7 +7,8 @@ const ASSETS_TO_CACHE = [
   '/offline.html',
   '/css/styles.css',
   '/js/main.js',
-  'https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg'
+  'https://ik.imagekit.io/Selvamraj700/mushroomKit.png',
+  'https://ik.imagekit.io/Selvamraj700/logo_opaque_3000px%20(1).png'
 ];
 
 // Install event: Pre-cache essential assets

@@ -8,15 +8,15 @@
   "theme_color": "#2D5A3D",
   "icons": [
     {
-      "src": "https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg",
+      "src": "https://ik.imagekit.io/Selvamraj700/logo_opaque_3000px%20(1).png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://ik.imagekit.io/Selvamraj700/TheMushClub.jpeg",
+      "src": "https://ik.imagekit.io/Selvamraj700/logo_opaque_3000px%20(1).png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

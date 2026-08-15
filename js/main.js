@@ -67,7 +67,7 @@
         'High success rate'
       ],
       forms: ['Standard Kit'],
-      image: 'https://ik.imagekit.io/Selvamraj700/oy%20msuhrrom%20training%20kit%20-_2_.jpeg'
+      image: 'https://ik.imagekit.io/Selvamraj700/mushroomKit.png'
     },
     {
       id: 'spawn',

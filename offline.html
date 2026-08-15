@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>You're Offline | MushClub</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=16">
   <style>
     /* Specific styles for the offline page */
     body {
@@ -15,6 +16,7 @@
       font-family: var(--font-body, system-ui, -apple-system, sans-serif);
       margin: 0;
     }
+
     .offline-wrapper {
       flex: 1;
       display: flex;
@@ -24,6 +26,7 @@
       text-align: center;
       padding: 2rem;
     }
+
     .offline-icon {
       width: 120px;
       height: 120px;
@@ -31,12 +34,14 @@
       color: var(--brand-primary, #2d5a3d);
       opacity: 0.8;
     }
+
     .offline-title {
       font-family: var(--font-heading, serif);
       font-size: 2.5rem;
       color: var(--brand-primary-dark, #1a3c26);
       margin-bottom: 1rem;
     }
+
     .offline-message {
       font-size: 1.125rem;
       color: var(--neutral-600, #555555);
@@ -44,12 +49,14 @@
       margin-bottom: 2rem;
       line-height: 1.6;
     }
+
     .offline-actions {
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
     }
+
     .btn {
       display: inline-block;
       padding: 0.75rem 1.5rem;
@@ -61,22 +68,27 @@
       border: 2px solid transparent;
       font-family: var(--font-body, sans-serif);
     }
+
     .btn-primary {
       background-color: var(--brand-primary, #2d5a3d);
       color: white;
     }
+
     .btn-primary:hover {
       background-color: var(--brand-primary-light, #3d7a52);
     }
+
     .btn-outline {
       background-color: transparent;
       color: var(--brand-primary, #2d5a3d);
       border-color: var(--brand-primary, #2d5a3d);
     }
+
     .btn-outline:hover {
       background-color: var(--brand-primary, #2d5a3d);
       color: white;
     }
+
     .offline-footer {
       padding: 1.5rem;
       text-align: center;
@@ -87,11 +99,13 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="offline-wrapper">
     <!-- Mushroom / Network Offline Icon -->
-    <svg class="offline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg class="offline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+      stroke-linecap="round" stroke-linejoin="round">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -102,7 +116,8 @@
 
     <h1 class="offline-title">You're Offline</h1>
     <p class="offline-message">
-      It looks like your internet connection is unavailable. Don't worry—once you're back online, MushClubb will be ready for you.
+      It looks like your internet connection is unavailable. Don't worry—once you're back online, MushClubb will be
+      ready for you.
     </p>
 
     <div class="offline-actions">
@@ -117,11 +132,12 @@
 
   <script>
     document.getElementById('current-year').textContent = new Date().getFullYear();
-    
+
     // Automatically reload the page when the connection comes back
     window.addEventListener('online', () => {
       window.location.reload();
     });
   </script>
 </body>
+
 </html>

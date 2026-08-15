@@ -18,9 +18,9 @@
   --brand-accent-light: #D4A97E;
   --brand-accent-dark: #A87A54;
 
-  /* ─── Neutral Colors (warm undertone) ─── */
-  --neutral-50: #FAFAF7;
-  --neutral-100: #F5F3EE;
+  /* ─── Neutral Colors (warm undertone removed) ─── */
+  --neutral-50: #FFFFFF;
+  --neutral-100: #FFFFFF;
   --neutral-200: #E8E4DC;
   --neutral-300: #D4CFC4;
   --neutral-400: #A39E93;
@@ -143,8 +143,8 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.6;
-  color: var(--neutral-600);
-  background-color: var(--neutral-50);
+  color: #000000;
+  background-color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -459,16 +459,15 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FFFFFF;
-  border: 2px solid var(--brand-accent);
-  box-shadow: 0 0 12px rgba(200, 149, 108, 0.35);
-  padding: 2px;
-  transition: transform 250ms var(--ease-default), box-shadow 250ms var(--ease-default);
+  background-color: transparent;
+  padding: 0;
+  position: relative;
+  top: 3px;
+  transition: transform 250ms var(--ease-default);
 }
 
 .nav__logo:hover .logo-mask {
-  transform: scale(1.06);
-  box-shadow: 0 0 16px rgba(200, 149, 108, 0.5);
+  transform: scale(1.05);
 }
 
 .nav__logo-image {
@@ -477,8 +476,6 @@ p {
   display: block;
   object-fit: cover;
   border-radius: 50%;
-  transform: scale(1.05);
-  filter: brightness(1.1) contrast(1.1);
 }
 
 .footer__logo-image {
@@ -487,8 +484,6 @@ p {
   display: block;
   object-fit: cover;
   border-radius: 50%;
-  transform: scale(1.05);
-  filter: brightness(1.1) contrast(1.1);
 }
 
 .nav__links {
@@ -573,7 +568,7 @@ p {
   background: transparent;
   border: none;
   padding: 0;
-  margin-right: 8px;
+  margin-right: 0;
   cursor: pointer;
   position: relative;
   z-index: 999;
@@ -585,7 +580,7 @@ p {
 .nav__hamburger.open {
   position: fixed;
   top: 14px;
-  right: calc(var(--space-6) + 8px);
+  right: var(--space-4);
   background-color: var(--neutral-900);
 }
 
@@ -864,10 +859,12 @@ p {
   background-color: var(--brand-primary);
   color: #FFFFFF;
 }
+
 .form-container .btn-primary:hover,
 .form-container .btn-primary:focus-visible {
   background-color: var(--brand-primary-light);
 }
+
 .form-container .btn-primary:active {
   background-color: var(--brand-primary-dark);
 }
@@ -1091,12 +1088,14 @@ p {
   overflow: hidden;
   aspect-ratio: 4 / 3;
   position: relative;
+  width: 100%;
 }
 
 .product-card__image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background-color: var(--neutral-50);
   transition: transform 500ms var(--ease-default);
 }
@@ -2248,7 +2247,7 @@ p {
   }
 
   .hero {
-    padding-top: var(--space-20);
+    padding-top: calc(72px + var(--space-8));
     padding-bottom: var(--space-16);
   }
 
@@ -2304,6 +2303,11 @@ p {
     height: 64px;
   }
 
+  .nav__inner {
+    padding-left: var(--space-4);
+    padding-right: var(--space-3);
+  }
+
   .logo-mask {
     height: 48px;
     width: 48px;
@@ -2319,11 +2323,17 @@ p {
 
   .nav__hamburger {
     display: flex;
+    margin-right: -4px;
+  }
+
+  .nav__hamburger.open {
+    top: 10px;
+    right: var(--space-3);
   }
 
   /* Hero */
   .hero {
-    padding-top: var(--space-8);
+    padding-top: calc(64px + var(--space-10));
     padding-bottom: var(--space-16);
   }
 
@@ -2334,6 +2344,7 @@ p {
 
   .hero__image-wrapper {
     order: -1;
+    margin-top: var(--space-4);
   }
 
   .hero__image {
@@ -2962,7 +2973,7 @@ body.faq-unreleased a[href="#faq"] {
   border-radius: 50px;
   text-align: center;
   font-size: 30px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -2974,7 +2985,7 @@ body.faq-unreleased a[href="#faq"] {
 .whatsapp-float:hover,
 .whatsapp-float:focus-visible {
   transform: scale(1.1);
-  box-shadow: 0px 6px 16px rgba(0,0,0,0.2);
+  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.2);
   background-color: #1ebe57;
   color: #FFF;
 }
@@ -2986,8 +2997,18 @@ body.faq-unreleased a[href="#faq"] {
     bottom: 20px;
     right: 20px;
   }
+
   .whatsapp-float svg {
     width: 28px;
     height: 28px;
   }
+}
+
+/* Override section headings per user request */
+.section-heading {
+  color: rgb(19, 98, 20) !important;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
