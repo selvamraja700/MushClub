@@ -508,9 +508,6 @@
   });
 
   /* ─── Open Enquiry Form Controller ─── */
-  // Bug #4 fix: desktop path now computes target position BEFORE closing
-  // the overlay, then uses overlayManager.close(targetPosition) to do a
-  // single atomic scroll instead of two conflicting scrollTo calls.
   function openEnquiryForm(productPayload) {
     // Pre-select product if provided
     if (productPayload) {
@@ -521,19 +518,27 @@
       }
     }
 
-    var formHidden = formContainer && getComputedStyle(formContainer).display === 'none';
-    if (formHidden && formContainer) {
-      // Only open as modal if it's explicitly hidden (e.g. some edge case CSS)
-      overlayManager.open('enquiry-form');
+    // On mobile (< 1024px) or when triggered from the mobile menu: Open modal popup directly without page scrolling
+    if (window.innerWidth < 1024 || overlayManager.getActive() === 'mobile-menu') {
+      if (overlayManager.getActive() === 'mobile-menu') {
+        overlayManager.close();
+        setTimeout(function () {
+          overlayManager.open('enquiry-form');
+          var nameField = document.getElementById('name');
+          if (nameField) nameField.focus();
+        }, 120);
+      } else {
+        overlayManager.open('enquiry-form');
+        var nameField = document.getElementById('name');
+        if (nameField) nameField.focus();
+      }
       return;
     }
 
-    // Desktop: compute target position FIRST, then close overlay with
-    // that position so there is exactly ONE scroll, not two.
+    // Desktop wide view: scroll into contact section
     var contactSection = document.getElementById('contact');
     if (contactSection) {
       if (overlayManager.isActive()) {
-        // Single atomic close + scroll
         overlayManager.close(contactSection);
       } else {
         contactSection.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
@@ -751,6 +756,24 @@
     });
   }
 
+  // Enquiry form modal close button
+  if (formClose) {
+    formClose.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      overlayManager.close();
+    });
+  }
+
+  var cancelReturn = document.getElementById('cancel-return');
+  if (cancelReturn) {
+    cancelReturn.addEventListener('click', function (e) {
+      e.preventDefault();
+      renderState(FORM_STATES.IDLE);
+      overlayManager.close();
+    });
+  }
+
 
 
   // Focus trap for product modal
@@ -800,89 +823,315 @@
 
 
   /* ═══════════════════════════════════════════════════════
-     ENQUIRY FORM — Validation + Submission
+     ENQUIRY FORM — Robust Submit-Time Validation & Word Counter
      ═══════════════════════════════════════════════════════ */
+  var submitAttempted = false;
+
+  /**
+   * Meaningful word count helper
+   * Ignores leading/trailing spaces, multiple spaces, tabs, line breaks.
+   * Whitespace-only strings return 0.
+   */
+  function countWords(str) {
+    if (!str) return 0;
+    var trimmed = str.trim();
+    if (trimmed === '') return 0;
+    var words = trimmed.split(/\s+/);
+    return words.length;
+  }
+
+  /**
+   * Truncates string to at most maxWords actual words, preserving existing whitespace structure.
+   */
+  function truncateToWords(str, maxWords) {
+    if (!str) return '';
+    var trimmed = str.trim();
+    if (trimmed === '') return '';
+
+    var wordCount = 0;
+    var inWord = false;
+    var cutoffIndex = str.length;
+
+    for (var i = 0; i < str.length; i++) {
+      var isSpace = /\s/.test(str[i]);
+      if (!isSpace) {
+        if (!inWord) {
+          inWord = true;
+          wordCount++;
+          if (wordCount > maxWords) {
+            cutoffIndex = i;
+            while (cutoffIndex > 0 && /\s/.test(str[cutoffIndex - 1])) {
+              cutoffIndex--;
+            }
+            return str.substring(0, cutoffIndex);
+          }
+        }
+      } else {
+        inWord = false;
+      }
+    }
+    return str;
+  }
+
+  function updateMessageFeedback() {
+    var messageField = document.getElementById('message');
+    var wordCountEl = document.getElementById('message-word-count');
+    var errorEl = document.getElementById('message-error');
+    if (!messageField) return;
+
+    var count = countWords(messageField.value);
+
+    // 1. Single source of truth for counter text
+    if (wordCountEl) {
+      wordCountEl.textContent = count + ' / 150 words';
+      wordCountEl.classList.remove('near-limit', 'at-limit', 'exceeded');
+    }
+
+    // 2. Remove previous warning/error classes on textarea
+    messageField.classList.remove('near-limit', 'at-limit', 'error');
+
+    // 3. Progressive visual states
+    if (count <= 120) {
+      // 0–120 words: Normal state
+      if (errorEl && errorEl.textContent === 'Message cannot exceed 150 words.') {
+        errorEl.textContent = '';
+      }
+    } else if (count >= 121 && count <= 149) {
+      // 121–149 words: Near-limit state (Light red warning border, valid)
+      messageField.classList.add('near-limit');
+      if (wordCountEl) wordCountEl.classList.add('near-limit');
+      if (errorEl && errorEl.textContent === 'Message cannot exceed 150 words.') {
+        errorEl.textContent = '';
+      }
+    } else if (count === 150) {
+      // Exactly 150 words: Maximum-limit state (Dark red limit border, still valid)
+      messageField.classList.add('at-limit');
+      if (wordCountEl) wordCountEl.classList.add('at-limit');
+      if (errorEl && errorEl.textContent === 'Message cannot exceed 150 words.') {
+        errorEl.textContent = '';
+      }
+    } else {
+      // 151+ words: Defensive safety fallback state (Dark red error state, invalid)
+      messageField.classList.add('error');
+      if (wordCountEl) wordCountEl.classList.add('exceeded');
+      if (submitAttempted) {
+        if (errorEl) errorEl.textContent = 'Message cannot exceed 150 words.';
+      }
+    }
+  }
+
   var validationRules = {
     name: {
       required: true,
       validate: function (v) { return /^[A-Za-z\s]{2,20}$/.test(v.trim()); },
-      message: 'Letters only, max 20 chars.'
+      emptyMessage: 'Full name is required.',
+      invalidMessage: 'Letters only, 2-20 chars.'
     },
     mobile: {
       required: true,
       validate: function (v) { return /^[0-9]{10}$/.test(v.trim()); },
-      message: 'Enter a valid 10-digit number.'
+      emptyMessage: 'Mobile number is required.',
+      invalidMessage: 'Enter a valid 10-digit number.'
     },
     email: {
-      required: true,
-      validate: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); },
-      message: 'Enter a valid email address.'
+      required: false,
+      validate: function (v) {
+        if (!v.trim()) return true;
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+      },
+      emptyMessage: '',
+      invalidMessage: 'Enter a valid email address.'
     },
     product: {
       required: true,
       validate: function (v) { return v.trim() !== ''; },
-      message: 'Please select a product of interest.'
+      emptyMessage: 'Please select a product of interest.',
+      invalidMessage: 'Please select a product of interest.'
     },
     quantity: {
       required: true,
       validate: function (v) { return v.trim() !== '' && v.trim().length <= 15; },
-      message: 'Please provide an estimated quantity (max 15 chars).'
+      emptyMessage: 'Estimated quantity is required.',
+      invalidMessage: 'Quantity cannot exceed 15 characters.'
     },
     message: {
       required: false,
-      validate: function (v) { return v.trim().length <= 350; },
-      message: 'Message cannot exceed 350 characters.'
+      validate: function (v) {
+        return countWords(v) <= 150;
+      },
+      emptyMessage: '',
+      invalidMessage: 'Message cannot exceed 150 words.'
     }
   };
 
-  function validateField(field) {
+  /**
+   * Validate an individual field.
+   * If updateUI is true, applies/removes .error and error messages in DOM.
+   * If updateUI is false, performs non-destructive validation without UI side effects.
+   */
+  function validateField(field, updateUI) {
+    if (!field || !field.name) return true;
+    if (updateUI === undefined) {
+      updateUI = submitAttempted;
+    }
+
     var rule = validationRules[field.name];
     if (!rule) return true;
 
-    var value = field.value;
+    // Special progressive feedback for message textarea
+    if (field.name === 'message') {
+      var count = countWords(field.value);
+      var isMsgValid = count <= 150;
+      updateMessageFeedback();
+      return isMsgValid;
+    }
+
+    var value = field.value || '';
+    var trimmed = value.trim();
     var errorEl = document.getElementById(field.name + '-error');
+    var isValid = true;
+    var errorMsg = '';
 
-    if (rule.required && !value.trim()) {
-      field.classList.add('error');
-      field.classList.remove('valid');
-      if (errorEl) errorEl.textContent = 'This field is required.';
-      return false;
+    if (rule.required && !trimmed) {
+      isValid = false;
+      errorMsg = rule.emptyMessage || 'This field is required.';
+    } else if (!rule.validate(value)) {
+      isValid = false;
+      errorMsg = rule.invalidMessage || 'Invalid input.';
     }
 
-    if (value.trim() && !rule.validate(value)) {
-      field.classList.add('error');
-      field.classList.remove('valid');
-      if (errorEl) errorEl.textContent = rule.message;
-      return false;
+    if (updateUI) {
+      if (!isValid) {
+        field.classList.add('error');
+        field.classList.remove('valid');
+        if (errorEl) errorEl.textContent = errorMsg;
+      } else {
+        field.classList.remove('error');
+        if (errorEl) errorEl.textContent = '';
+      }
     }
 
-    field.classList.remove('error');
-    if (value.trim()) field.classList.add('valid');
-    if (errorEl) errorEl.textContent = '';
-    return true;
+    return isValid;
   }
 
-  // Live validation on blur
+  // Field event listeners for reactive post-submit validation & live word counting
   if (enquiryForm) {
     enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
-      field.addEventListener('blur', function () { validateField(field); });
-      field.addEventListener('input', function () {
-        if (field.classList.contains('error')) {
-          validateField(field);
-        }
-        
-        // Name field warning indicator if > 15 chars
-        if (field.name === 'name') {
-          if (field.value.length > 15) {
-            field.classList.add('warning');
-          } else {
-            field.classList.remove('warning');
+      // Word count live enforcement & update on message textarea
+      if (field.name === 'message') {
+        // Handle paste to prevent exceeding 150 words
+        field.addEventListener('paste', function (e) {
+          var clipboardData = e.clipboardData || window.clipboardData;
+          if (!clipboardData) return;
+          var pastedText = clipboardData.getData('text');
+          if (!pastedText) return;
+
+          var currentVal = field.value;
+          var start = field.selectionStart !== null ? field.selectionStart : currentVal.length;
+          var end = field.selectionEnd !== null ? field.selectionEnd : currentVal.length;
+
+          var before = currentVal.substring(0, start);
+          var after = currentVal.substring(end);
+          var combined = before + pastedText + after;
+
+          if (countWords(combined) > 150) {
+            e.preventDefault();
+            var truncated = truncateToWords(combined, 150);
+            field.value = truncated;
+            var newCursor = Math.min(truncated.length, start + pastedText.length);
+            try {
+              field.setSelectionRange(newCursor, newCursor);
+            } catch (err) { }
+            updateMessageFeedback();
           }
+        });
+
+        // Handle keydown to prevent typing 151st word while allowing editing
+        field.addEventListener('keydown', function (e) {
+          if (
+            e.key === 'Backspace' ||
+            e.key === 'Delete' ||
+            e.key === 'Tab' ||
+            e.key === 'Escape' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'ArrowRight' ||
+            e.key === 'ArrowUp' ||
+            e.key === 'ArrowDown' ||
+            e.key === 'Home' ||
+            e.key === 'End' ||
+            e.key === 'PageUp' ||
+            e.key === 'PageDown' ||
+            e.ctrlKey ||
+            e.metaKey ||
+            e.altKey
+          ) {
+            return;
+          }
+
+          if (field.selectionStart !== field.selectionEnd) {
+            return;
+          }
+
+          var count = countWords(field.value);
+          if (count >= 150) {
+            var val = field.value;
+            var pos = field.selectionStart !== null ? field.selectionStart : val.length;
+
+            if (e.key === ' ' || e.key === 'Enter') {
+              var prevChar = pos > 0 ? val[pos - 1] : '';
+              if (!/\s/.test(prevChar)) {
+                e.preventDefault();
+                updateMessageFeedback();
+                return;
+              }
+            }
+
+            var charBefore = pos > 0 ? val[pos - 1] : ' ';
+            var charAfter = pos < val.length ? val[pos] : ' ';
+            if (/\s/.test(charBefore) && /\s/.test(charAfter) && e.key.length === 1) {
+              e.preventDefault();
+              updateMessageFeedback();
+              return;
+            }
+          }
+        });
+
+        // Live input truncation fallback and feedback
+        field.addEventListener('input', function () {
+          var count = countWords(field.value);
+          if (count > 150) {
+            var prevScroll = field.scrollTop;
+            var prevSelStart = field.selectionStart;
+            field.value = truncateToWords(field.value, 150);
+            var newSel = Math.min(field.value.length, prevSelStart);
+            try {
+              field.setSelectionRange(newSel, newSel);
+            } catch (err) { }
+            field.scrollTop = prevScroll;
+          }
+          updateMessageFeedback();
+        });
+      }
+
+      // Live correction handling after submit attempted
+      field.addEventListener('input', function () {
+        if (field.name !== 'message' && submitAttempted) {
+          validateField(field, true);
         }
       });
-      // <select> elements fire 'change', not 'input', in most browsers
+
+      field.addEventListener('blur', function () {
+        if (submitAttempted) {
+          validateField(field, true);
+        }
+      });
+
       if (field.tagName === 'SELECT') {
-        field.addEventListener('change', function () { validateField(field); });
+        field.addEventListener('change', function () {
+          if (submitAttempted) {
+            validateField(field, true);
+          }
+        });
       }
     });
   }
@@ -894,16 +1143,38 @@
     if (e) e.preventDefault();
     if (isSubmitting) return; // prevent double submit
     if (!enquiryForm) return;
-    // Validate fields
+
+    // User clicked submit -> enter validation state
+    submitAttempted = true;
+
+    var formFields = enquiryForm.querySelectorAll('.form__input, .form__select, .form__textarea');
     var isValid = true;
-    enquiryForm.querySelectorAll('.form__input[required], .form__select[required], .form__textarea[required]').forEach(function (field) {
-      if (!validateField(field)) isValid = false;
+    var firstInvalidField = null;
+
+    formFields.forEach(function (field) {
+      var fieldValid = validateField(field, true);
+      if (!fieldValid) {
+        isValid = false;
+        if (!firstInvalidField) {
+          firstInvalidField = field;
+        }
+      }
     });
+
     if (!isValid) {
-      var firstError = enquiryForm.querySelector('.form__input.error, .form__select.error, .form__textarea.error');
-      if (firstError) firstError.focus();
+      if (firstInvalidField) {
+        firstInvalidField.focus();
+      }
       return;
     }
+
+    // Clear any previous general error message
+    var generalError = document.getElementById('form-general-error');
+    if (generalError) {
+      generalError.style.display = 'none';
+      generalError.textContent = '';
+    }
+
     // Transition to processing state
     isSubmitting = true;
     currentState = FORM_STATES.PROCESSING;
@@ -912,30 +1183,87 @@
       submitBtn.classList.add('loading');
       submitBtn.disabled = true;
     }
-    // Disable form fields
-    enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) { fld.disabled = true; });
-    // Simulated processing timer
-    processingTimer = setTimeout(function () {
-      // Clear timer reference
-      processingTimer = null;
-      isSubmitting = false;
-      if (submitBtn) {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-      }
-      // Re‑enable fields
-      enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) { fld.disabled = false; });
-      saveFormDataToCache();
-      currentState = FORM_STATES.SUCCESS;
-      renderState(currentState);
-      
-      // Auto-reset after 3 seconds
-      setTimeout(function () {
-        if (currentState === FORM_STATES.SUCCESS) {
-          resetFormState({ preventDefault: function () {} });
+
+    // Disable form fields during processing
+    enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) {
+      fld.disabled = true;
+    });
+
+    // Prepare form data for Web3Forms
+    var formData = new FormData(enquiryForm);
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    })
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        isSubmitting = false;
+        if (submitBtn) {
+          submitBtn.classList.remove('loading');
+          submitBtn.disabled = false;
         }
-      }, 3000);
-    }, PROCESSING_DELAY);
+
+        // Re-enable form fields
+        enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) {
+          fld.disabled = false;
+        });
+
+        if (data.success) {
+          saveFormDataToCache();
+          currentState = FORM_STATES.SUCCESS;
+          renderState(currentState);
+
+          // Reset the form fields after successful submission
+          enquiryForm.reset();
+          enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
+            field.classList.remove('error', 'valid', 'near-limit', 'at-limit');
+          });
+          enquiryForm.querySelectorAll('.form__error').forEach(function (el) {
+            el.textContent = '';
+          });
+          updateMessageFeedback();
+        } else {
+          // Submission failed from Web3Forms (e.g. rate limit, config issue)
+          // Keep user's entered data intact and display error banner
+          currentState = FORM_STATES.IDLE;
+          renderState(currentState);
+
+          if (generalError) {
+            generalError.textContent = data.message || 'Submission failed. Please check your details and try again.';
+            generalError.style.display = 'block';
+            generalError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            alert(data.message || 'Submission failed. Please check your details and try again.');
+          }
+        }
+      })
+      .catch(function (err) {
+        isSubmitting = false;
+        if (submitBtn) {
+          submitBtn.classList.remove('loading');
+          submitBtn.disabled = false;
+        }
+
+        // Re-enable form fields
+        enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (fld) {
+          fld.disabled = false;
+        });
+
+        // Network or fetch failure — keep entered data intact
+        currentState = FORM_STATES.IDLE;
+        renderState(currentState);
+
+        if (generalError) {
+          generalError.textContent = 'Submission failed due to a network connection issue. Please check your connection and try again.';
+          generalError.style.display = 'block';
+          generalError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          alert('Submission failed due to a network connection issue. Please check your connection and try again.');
+        }
+      });
   }
 
   if (enquiryForm) {
@@ -944,32 +1272,43 @@
 
   // Submit another or close success message
   function resetFormState(e) {
-    e.preventDefault();
-    // Reset to idle state
+    if (e && e.preventDefault) e.preventDefault();
+    submitAttempted = false;
     currentState = FORM_STATES.IDLE;
     renderState(currentState);
-    // Clear any active classes
+
+    var generalError = document.getElementById('form-general-error');
+    if (generalError) {
+      generalError.style.display = 'none';
+      generalError.textContent = '';
+    }
+
     if (formSuccess) formSuccess.classList.remove('active');
     if (formCancel) formCancel.style.display = 'none';
-    // Reset form fields
+
     if (enquiryForm) {
       enquiryForm.reset();
       enquiryForm.querySelectorAll('.form__input, .form__textarea, .form__select').forEach(function (field) {
-        field.classList.remove('error', 'valid');
+        field.classList.remove('error', 'valid', 'near-limit', 'at-limit');
         field.disabled = false;
       });
-      enquiryForm.querySelectorAll('.form__error').forEach(function (el) { el.textContent = ''; });
+      enquiryForm.querySelectorAll('.form__error').forEach(function (el) {
+        el.textContent = '';
+      });
+      updateMessageFeedback();
       loadCachedFormData();
     }
-    // Clear any pending timer
-    if (processingTimer) { clearTimeout(processingTimer); processingTimer = null; }
+
+    if (processingTimer) {
+      clearTimeout(processingTimer);
+      processingTimer = null;
+    }
     isSubmitting = false;
   }
 
   if (submitAnother) {
     submitAnother.addEventListener('click', resetFormState);
   }
-
 
   // Cancel return button
   var cancelReturn = document.getElementById('cancel-return');
@@ -985,15 +1324,12 @@
 
     if (nameField && localStorage.getItem('mushclub_name')) {
       nameField.value = localStorage.getItem('mushclub_name');
-      validateField(nameField);
     }
     if (mobileField && localStorage.getItem('mushclub_mobile')) {
       mobileField.value = localStorage.getItem('mushclub_mobile');
-      validateField(mobileField);
     }
     if (emailField && localStorage.getItem('mushclub_email')) {
       emailField.value = localStorage.getItem('mushclub_email');
-      validateField(emailField);
     }
   }
 
@@ -1128,6 +1464,66 @@
   }
 
   /* ═══════════════════════════════════════════════════════
+     RAPID CUSTOMER COUNT-UP ANIMATION (1 -> 100+ Customers in ~1s)
+     ═══════════════════════════════════════════════════════ */
+  var customerAnimFrame = null;
+
+  function initCustomerCounter() {
+    var statValEl = document.getElementById('customer-count-val');
+    var statLabelEl = document.getElementById('customer-count-label');
+    if (!statValEl) return;
+
+    // Clean up any existing animation frame
+    if (customerAnimFrame) {
+      cancelAnimationFrame(customerAnimFrame);
+      customerAnimFrame = null;
+    }
+
+    if (statLabelEl) statLabelEl.textContent = 'Customers';
+
+    // Respect prefers-reduced-motion
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      statValEl.textContent = '100+';
+      return;
+    }
+
+    var startVal = 1;
+    var targetVal = 100;
+    var duration = 1000; // 1 second total animation duration
+    var startTime = null;
+
+    statValEl.textContent = '1';
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var elapsed = timestamp - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+
+      // Ease-out cubic curve for natural smooth deceleration
+      var easeProgress = 1 - Math.pow(1 - progress, 3);
+      var current = Math.floor(startVal + (targetVal - startVal) * easeProgress);
+
+      if (progress >= 1 || current >= targetVal) {
+        statValEl.textContent = '100+';
+        customerAnimFrame = null;
+      } else {
+        statValEl.textContent = String(current);
+        customerAnimFrame = requestAnimationFrame(step);
+      }
+    }
+
+    customerAnimFrame = requestAnimationFrame(step);
+
+    // Clean up animation on page unload
+    window.addEventListener('beforeunload', function () {
+      if (customerAnimFrame) {
+        cancelAnimationFrame(customerAnimFrame);
+        customerAnimFrame = null;
+      }
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════════
      INITIALIZATION
      ═══════════════════════════════════════════════════════ */
   function init() {
@@ -1136,6 +1532,7 @@
     handleNavScroll();
     loadCachedFormData();
     initTypewriterGreeting();
+    initCustomerCounter();
 
     var mobileEnquireBtn = document.getElementById('mobile-enquire-btn');
     if (mobileEnquireBtn) {

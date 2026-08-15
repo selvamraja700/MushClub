@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mushclub-cache-v19';
+const CACHE_NAME = 'mushclub-cache-v29';
 const OFFLINE_URL = 'offline.html';
 
 const ASSETS_TO_CACHE = [
